@@ -1,0 +1,17 @@
+$ curl -s localhost:8099/health; echo
+{"status":"ok","version":"8ea4a16"}
+
+$ curl -s localhost:8099/; echo
+{"app":"Session 17 DevSecOps Notes API","endpoints":["GET /health","GET /notes","POST /notes","GET /notes/<id>","DELETE /notes/<id>"],"environment":"kubernetes","version":"8ea4a16"}
+
+$ curl -s -X POST localhost:8099/notes -H 'Content-Type: application/json' -d '{"title":"from k8s"}'; echo
+{"body":"","id":1,"title":"from k8s"}
+
+$ kubectl -n devsecops get pods -o jsonpath='{range .items[*]}{.metadata.name}{"  runAsUser="}{.spec.securityContext.runAsUser}{"  readOnlyRootFilesystem="}{.spec.containers[0].securityContext.readOnlyRootFilesystem}{"\n"}{end}'
+notes-api-7c9556798c-br6np  runAsUser=10001  readOnlyRootFilesystem=true
+notes-api-7c9556798c-jqxgd  runAsUser=10001  readOnlyRootFilesystem=true
+$ kubectl -n devsecops exec deploy/notes-api -- touch /app/hacked || true
+touch: cannot touch '/app/hacked': Read-only file system
+command terminated with exit code 1
+$ kubectl -n devsecops run root-test --image=nginx --restart=Never || true
+Error from server (Forbidden): pods "root-test" is forbidden: violates PodSecurity "restricted:latest": allowPrivilegeEscalation != false (container "root-test" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "root-test" must set securityContext.capabilities.drop=["ALL"]), runAsNonRoot != true (pod or container "root-test" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "root-test" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")

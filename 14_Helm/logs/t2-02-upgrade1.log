@@ -1,0 +1,8 @@
+$ helm upgrade shop myapp -n helm-rollback --set image.tag=1.26 --set replicaCount=2 --wait | head -7
+Release "shop" has been upgraded. Happy Helming!
+NAME: shop
+LAST DEPLOYED: Wed Oct  7 03:20:05 2026
+NAMESPACE: helm-rollback
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete

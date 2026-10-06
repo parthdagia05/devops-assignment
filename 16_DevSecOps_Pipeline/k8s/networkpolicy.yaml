@@ -1,0 +1,16 @@
+# Only allow inbound traffic to the app port; deny all egress
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: notes-api
+  namespace: devsecops
+spec:
+  podSelector:
+    matchLabels:
+      app: notes-api
+  policyTypes: ["Ingress", "Egress"]
+  ingress:
+    - ports:
+        - port: 8080
+          protocol: TCP
+  egress: []

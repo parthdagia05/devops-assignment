@@ -1,0 +1,7 @@
+# Bandit (Python SAST) configuration
+# Run: bandit -c security/bandit.yaml -r app
+exclude_dirs:
+  - tests
+  - .venv
+# Every Bandit test is enabled; add test IDs here only with a written reason.
+skips: []

@@ -1,0 +1,39 @@
+# Custom Semgrep (SAST) rules for this project.
+# The pipeline runs these together with the community rulesets p/python, p/flask and p/secrets.
+rules:
+  - id: flask-debug-enabled
+    languages: [python]
+    severity: ERROR
+    message: Flask debug mode exposes an interactive debugger (remote code execution). Never enable it.
+    pattern-either:
+      - pattern: $APP.run(..., debug=True, ...)
+      - pattern: $APP.debug = True
+      - pattern: $APP.config["DEBUG"] = True
+
+  - id: flask-bind-all-interfaces-dev-server
+    languages: [python]
+    severity: WARNING
+    message: The Flask dev server should not listen on 0.0.0.0. Use gunicorn in the container instead.
+    pattern: $APP.run(..., host="0.0.0.0", ...)
+
+  - id: subprocess-shell-true
+    languages: [python]
+    severity: ERROR
+    message: subprocess with shell=True allows command injection.
+    pattern: subprocess.$FUNC(..., shell=True, ...)
+
+  - id: hardcoded-flask-secret-key
+    languages: [python]
+    severity: ERROR
+    message: Secret key is hardcoded. Read it from an environment variable / Kubernetes Secret.
+    pattern-either:
+      - pattern: $APP.secret_key = "..."
+      - pattern: $APP.config["SECRET_KEY"] = "..."
+
+  - id: yaml-unsafe-load
+    languages: [python]
+    severity: ERROR
+    message: yaml.load without SafeLoader can execute arbitrary code. Use yaml.safe_load.
+    patterns:
+      - pattern: yaml.load(...)
+      - pattern-not: yaml.load(..., Loader=yaml.SafeLoader, ...)

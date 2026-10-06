@@ -1,0 +1,13 @@
+$ helm install shop myapp -n helm-rollback --create-namespace --set image.tag=1.25 --wait | head -7
+NAME: shop
+LAST DEPLOYED: Wed Oct  7 03:19:49 2026
+NAMESPACE: helm-rollback
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+NOTES:
+$ kubectl get deploy shop-myapp -n helm-rollback -o jsonpath='{.spec.replicas} replicas, image={.spec.template.spec.containers[0].image}{"\n"}'
+1 replicas, image=nginx:1.25
+$ kubectl get pods -n helm-rollback
+NAME                          READY   STATUS    RESTARTS   AGE
+shop-myapp-7445564fbb-x2vsx   1/1     Running   0          16s

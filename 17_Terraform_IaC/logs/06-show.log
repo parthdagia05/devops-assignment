@@ -1,0 +1,154 @@
+$ terraform show -no-color
+# aws_s3_bucket.demo:
+resource "aws_s3_bucket" "demo" {
+    acceleration_status         = null
+    arn                         = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3"
+    bucket                      = "parth-tf-demo-dev-2ca593e3"
+    bucket_domain_name          = "parth-tf-demo-dev-2ca593e3.s3.amazonaws.com"
+    bucket_namespace            = "global"
+    bucket_prefix               = null
+    bucket_region               = "ap-south-1"
+    bucket_regional_domain_name = "parth-tf-demo-dev-2ca593e3.s3.ap-south-1.amazonaws.com"
+    force_destroy               = true
+    hosted_zone_id              = "Z11RGJOFQNVJUP"
+    id                          = "parth-tf-demo-dev-2ca593e3"
+    object_lock_enabled         = false
+    policy                      = null
+    region                      = "ap-south-1"
+    request_payer               = "BucketOwner"
+    tags                        = {
+        "Name" = "parth-tf-demo-dev-2ca593e3"
+    }
+    tags_all                    = {
+        "Env"       = "dev"
+        "ManagedBy" = "Terraform"
+        "Name"      = "parth-tf-demo-dev-2ca593e3"
+        "Owner"     = "Parth Dagia"
+        "Project"   = "session18-terraform"
+    }
+
+    grant {
+        id          = "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a"
+        permissions = [
+            "FULL_CONTROL",
+        ]
+        type        = "CanonicalUser"
+        uri         = null
+    }
+
+    server_side_encryption_configuration {
+        rule {
+            bucket_key_enabled = false
+
+            apply_server_side_encryption_by_default {
+                kms_master_key_id = null
+                sse_algorithm     = "AES256"
+            }
+        }
+    }
+
+    versioning {
+        enabled    = false
+        mfa_delete = false
+    }
+}
+
+# aws_s3_bucket_public_access_block.demo:
+resource "aws_s3_bucket_public_access_block" "demo" {
+    block_public_acls       = true
+    block_public_policy     = true
+    bucket                  = "parth-tf-demo-dev-2ca593e3"
+    id                      = "parth-tf-demo-dev-2ca593e3"
+    ignore_public_acls      = true
+    region                  = "ap-south-1"
+    restrict_public_buckets = true
+}
+
+# aws_s3_bucket_server_side_encryption_configuration.demo:
+resource "aws_s3_bucket_server_side_encryption_configuration" "demo" {
+    bucket                = "parth-tf-demo-dev-2ca593e3"
+    expected_bucket_owner = null
+    id                    = "parth-tf-demo-dev-2ca593e3"
+    region                = "ap-south-1"
+
+    rule {
+        blocked_encryption_types = []
+        bucket_key_enabled       = false
+
+        apply_server_side_encryption_by_default {
+            kms_master_key_id = null
+            sse_algorithm     = "AES256"
+        }
+    }
+}
+
+# aws_s3_bucket_versioning.demo:
+resource "aws_s3_bucket_versioning" "demo" {
+    bucket                = "parth-tf-demo-dev-2ca593e3"
+    expected_bucket_owner = null
+    id                    = "parth-tf-demo-dev-2ca593e3"
+    region                = "ap-south-1"
+
+    versioning_configuration {
+        mfa_delete = "Disabled"
+        status     = "Enabled"
+    }
+}
+
+# aws_s3_object.hello:
+resource "aws_s3_object" "hello" {
+    arn                           = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3/hello.txt"
+    bucket                        = "parth-tf-demo-dev-2ca593e3"
+    bucket_key_enabled            = false
+    cache_control                 = null
+    checksum_crc32                = null
+    checksum_crc32c               = null
+    checksum_crc64nvme            = null
+    checksum_sha1                 = null
+    checksum_sha256               = null
+    content                       = <<-EOT
+        Hello from Terraform! Session 18, Parth Dagia (24BCS10414)
+    EOT
+    content_disposition           = null
+    content_encoding              = null
+    content_language              = null
+    content_type                  = "text/plain"
+    etag                          = "ab582b5fd37eeb9e4910d1405781dcbf"
+    force_destroy                 = false
+    id                            = "parth-tf-demo-dev-2ca593e3/hello.txt"
+    key                           = "hello.txt"
+    object_lock_legal_hold_status = null
+    object_lock_mode              = null
+    object_lock_retain_until_date = null
+    region                        = "ap-south-1"
+    server_side_encryption        = "AES256"
+    storage_class                 = "STANDARD"
+    tags_all                      = {
+        "Env"       = "dev"
+        "ManagedBy" = "Terraform"
+        "Owner"     = "Parth Dagia"
+        "Project"   = "session18-terraform"
+    }
+    version_id                    = "AaETao2gk9u8W_KDKdpJjbMrwQ5eVLJL"
+    website_redirect              = null
+}
+
+# random_id.suffix:
+resource "random_id" "suffix" {
+    b64_std     = "LKWT4w=="
+    b64_url     = "LKWT4w"
+    byte_length = 4
+    dec         = "749048803"
+    hex         = "2ca593e3"
+    id          = "LKWT4w"
+}
+
+
+Outputs:
+
+bucket_arn = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3"
+bucket_name = "parth-tf-demo-dev-2ca593e3"
+bucket_region = "ap-south-1"
+sample_object_key = "hello.txt"
+versioning_status = "Enabled"
+[exit code 0]

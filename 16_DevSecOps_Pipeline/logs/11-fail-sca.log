@@ -1,0 +1,23 @@
+$ cat requirements.txt
+flask==3.1.3
+gunicorn==23.0.0
+PyYAML==5.3.1
+requests==2.25.0
+$ pip-audit -r requirements.txt --progress-spinner off
+Found 26 known vulnerabilities in 4 packages
+Name     Version ID              Fix Versions
+-------- ------- --------------- ------------
+pyyaml   5.3.1   PYSEC-2021-142  5.4
+requests 2.25.0  PYSEC-2023-74   2.31.0
+requests 2.25.0  PYSEC-2026-1873 2.32.0
+requests 2.25.0  PYSEC-2026-1872 2.32.4
+requests 2.25.0  PYSEC-2026-2275 2.33.0
+idna     2.10    PYSEC-2024-60   3.7
+idna     2.10    PYSEC-2026-215  3.15
+urllib3  1.26.20 PYSEC-2026-1999 2.5.0
+urllib3  1.26.20 PYSEC-2026-1998 2.6.0
+urllib3  1.26.20 PYSEC-2026-1994 2.6.0
+urllib3  1.26.20 PYSEC-2026-1996 2.6.3
+urllib3  1.26.20 PYSEC-2026-141  2.7.0
+urllib3  1.26.20 PYSEC-2026-4177 2.8.0
+urllib3  1.26.20 PYSEC-2026-4175 2.8.0

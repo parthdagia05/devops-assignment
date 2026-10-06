@@ -1,0 +1,107 @@
+$ bandit -c security/bandit.yaml -r app
+Test results:
+>> Issue: [B404:blacklist] Consider possible security implications associated with the subprocess module.
+   Severity: Low   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_imports.html#b404-import-subprocess
+   Location: app/admin.py:1:0
+1	import subprocess
+2	
+3	from flask import request
+
+--------------------------------------------------
+>> Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'dev-secret'
+   Severity: Low   Confidence: Medium
+   CWE: CWE-259 (https://cwe.mitre.org/data/definitions/259.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html
+   Location: app/admin.py:7:11
+6	
+7	app.config["SECRET_KEY"] = "dev-secret"
+8	
+
+--------------------------------------------------
+>> Issue: [B602:subprocess_popen_with_shell_equals_true] subprocess call with shell=True identified, security issue.
+   Severity: High   Confidence: High
+   CWE: CWE-78 (https://cwe.mitre.org/data/definitions/78.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b602_subprocess_popen_with_shell_equals_true.html
+   Location: app/admin.py:13:10
+12	    host = request.args.get("host", "localhost")
+13	    out = subprocess.check_output("ping -c 1 " + host, shell=True)
+14	    return out
+
+--------------------------------------------------
+>> Issue: [B201:flask_debug_true] A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+   Severity: High   Confidence: Medium
+   CWE: CWE-94 (https://cwe.mitre.org/data/definitions/94.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b201_flask_debug_true.html
+   Location: app/admin.py:18:4
+17	if __name__ == "__main__":
+18	    app.run(host="0.0.0.0", debug=True)
+
+--------------------------------------------------
+>> Issue: [B104:hardcoded_bind_all_interfaces] Possible binding to all interfaces.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-605 (https://cwe.mitre.org/data/definitions/605.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b104_hardcoded_bind_all_interfaces.html
+   Location: app/admin.py:18:17
+17	if __name__ == "__main__":
+18	    app.run(host="0.0.0.0", debug=True)
+
+--------------------------------------------------
+
+Code scanned:
+$ semgrep scan --config security/semgrep.yml --config p/python --config p/flask --config p/secrets --metrics=off app
+│ 9 Code Findings │
+    app/admin.py
+   ❯❯❱ security.hardcoded-flask-secret-key
+          ❰❰ Blocking ❱❱
+          Secret key is hardcoded. Read it from an environment variable / Kubernetes Secret.
+            7┆ app.config["SECRET_KEY"] = "dev-secret"
+   ❯❯❱ python.flask.security.injection.subprocess-injection.subprocess-injection
+          ❰❰ Blocking ❱❱
+          Detected user input entering a `subprocess` call unsafely. This could result in a command injection 
+          vulnerability. An attacker could use this vulnerability to execute arbitrary commands on the host,  
+          which allows them to download malware, scan sensitive data, or run any command they wish on the     
+          server. Do not let users choose the command to run. In general, prefer to use Python API versions of
+          system commands. If you must use subprocess, use a dictionary to allowlist a set of commands.       
+          Details: https://sg.run/5gW3                                                                        
+           13┆ out = subprocess.check_output("ping -c 1 " + host, shell=True)
+   ❯❯❱ security.subprocess-shell-true
+          ❰❰ Blocking ❱❱
+          subprocess with shell=True allows command injection.
+           13┆ out = subprocess.check_output("ping -c 1 " + host, shell=True)
+   ❯❯❱ python.lang.security.dangerous-subprocess-use.dangerous-subprocess-use
+          ❰❰ Blocking ❱❱
+          Detected subprocess function 'check_output' with user controlled data. A malicious actor could
+          leverage this to perform command injection. You may consider using 'shlex.escape()'.          
+          Details: https://sg.run/NWxp                                                                  
+           13┆ out = subprocess.check_output("ping -c 1 " + host, shell=True)
+   ❯❯❱ python.lang.security.audit.subprocess-shell-true.subprocess-shell-true
+          ❰❰ Blocking ❱❱
+          Found 'subprocess' function 'check_output' with 'shell=True'. This is dangerous because this call 
+          will spawn the command using a shell process. Doing so propagates current shell settings and      
+          variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False'
+          instead.                                                                                          
+          Details: https://sg.run/J92w                                                                      
+           ▶▶┆ Autofix ▶ False
+           13┆ out = subprocess.check_output("ping -c 1 " + host, shell=True)
+    ❯❱ python.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host
+          ❰❰ Blocking ❱❱
+          Running flask app with host 0.0.0.0 could expose the server publicly.
+          Details: https://sg.run/eLby                                         
+           18┆ app.run(host="0.0.0.0", debug=True)
+    ❯❱ python.flask.security.audit.debug-enabled.debug-enabled
+          ❰❰ Blocking ❱❱
+          Detected Flask app with debug=True. Do not deploy to production with this flag enabled as it will   
+          leak sensitive information. Instead, consider using Flask configuration variables or setting 'debug'
+          using system environment variables.                                                                 
+          Details: https://sg.run/dKrd                                                                        
+           18┆ app.run(host="0.0.0.0", debug=True)
+    ❯❱ security.flask-bind-all-interfaces-dev-server
+          ❰❰ Blocking ❱❱
+          The Flask dev server should not listen on 0.0.0.0. Use gunicorn in the container instead.
+           18┆ app.run(host="0.0.0.0", debug=True)
+   ❯❯❱ security.flask-debug-enabled
+          ❰❰ Blocking ❱❱
+          Flask debug mode exposes an interactive debugger (remote code execution). Never enable it.
+           18┆ app.run(host="0.0.0.0", debug=True)

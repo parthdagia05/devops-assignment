@@ -1,0 +1,6 @@
+Notes app "{{ .Release.Name }}" deployed ({{ .Values.app.environment }}).
+Replicas: {{ .Values.replicaCount }}   Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+
+Access it:
+  kubectl port-forward svc/{{ .Release.Name }}-svc 8080:{{ .Values.service.port }}
+  curl http://localhost:8080

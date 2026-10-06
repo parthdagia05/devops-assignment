@@ -1,0 +1,15 @@
+# Dependabot opens PRs when dependencies, the base image or actions get updates
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /16_DevSecOps_Pipeline
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /16_DevSecOps_Pipeline
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

@@ -1,0 +1,21 @@
+$ helm upgrade notes-dev notes-chart -f notes-chart/values-prod.yaml --wait | head -7
+Release "notes-dev" has been upgraded. Happy Helming!
+NAME: notes-dev
+LAST DEPLOYED: Wed Oct  7 03:21:07 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete
+$ kubectl get pods -l app=notes-dev
+NAME                                READY   STATUS      RESTARTS   AGE
+notes-dev-deploy-74956bd987-bgjwc   0/1     Completed   0          2s
+notes-dev-deploy-74956bd987-jskfh   0/1     Completed   0          23s
+notes-dev-deploy-74956bd987-xzjxl   0/1     Completed   0          2s
+notes-dev-deploy-bbcc464b4-4rptx    1/1     Running     0          1s
+notes-dev-deploy-bbcc464b4-fh222    1/1     Running     0          2s
+notes-dev-deploy-bbcc464b4-qwnfl    1/1     Running     0          1s
+$ kubectl exec deploy/notes-dev-deploy -- env | grep -E 'APP_NAME|ENVIRONMENT'
+APP_NAME=notes-app
+ENVIRONMENT=production
+$ kubectl get deploy notes-dev-deploy -o jsonpath='{.spec.template.spec.containers[0].image}'; echo
+nginx:1.25

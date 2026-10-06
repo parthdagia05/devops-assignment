@@ -1,0 +1,28 @@
+$ python security/gate.py reports security/policy.json
+Stage        Tool         Found                         Allowed                           Result
+-----------  -----------  ----------------------------  --------------------------------  ------
+SAST         bandit       HIGH=2, MEDIUM=1, LOW=2       HIGH<=0, MEDIUM<=0, LOW<=5        FAIL  
+SAST         semgrep      ERROR=6, WARNING=3, INFO=0    ERROR<=0, WARNING<=0, INFO<=10    FAIL  
+SAST         trivy-iac    CRITICAL=0, HIGH=0, MEDIUM=0  CRITICAL<=0, HIGH<=0, MEDIUM<=5   PASS  
+SCA          pip-audit    ANY=0                         ANY<=0                            PASS  
+Secret scan  gitleaks     ANY=0                         ANY<=0                            PASS  
+Image scan   trivy-image  CRITICAL=0, HIGH=0, MEDIUM=0  CRITICAL<=0, HIGH<=0, MEDIUM<=10  PASS  
+
+Findings:
+  bandit: [LOW] B404 app/admin.py:1 Consider possible security implications associated with the subprocess module.
+  bandit: [LOW] B105 app/admin.py:7 Possible hardcoded password: 'dev-secret'
+  bandit: [HIGH] B602 app/admin.py:13 subprocess call with shell=True identified, security issue.
+  bandit: [HIGH] B201 app/admin.py:18 A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.
+  bandit: [MEDIUM] B104 app/admin.py:18 Possible binding to all interfaces.
+  semgrep: [ERROR] hardcoded-flask-secret-key app/admin.py:7
+  semgrep: [ERROR] subprocess-injection app/admin.py:13
+  semgrep: [ERROR] subprocess-shell-true app/admin.py:13
+  semgrep: [ERROR] dangerous-subprocess-use app/admin.py:13
+  semgrep: [ERROR] subprocess-shell-true app/admin.py:13
+  semgrep: [WARNING] avoid_app_run_with_bad_host app/admin.py:18
+  semgrep: [WARNING] debug-enabled app/admin.py:18
+  semgrep: [WARNING] flask-bind-all-interfaces-dev-server app/admin.py:18
+  semgrep: [ERROR] flask-debug-enabled app/admin.py:18
+
+Security gate FAILED - image will NOT be pushed or deployed
+exit code: 1

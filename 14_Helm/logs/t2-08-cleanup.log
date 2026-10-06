@@ -1,0 +1,4 @@
+$ helm uninstall shop -n helm-rollback --wait && kubectl delete ns helm-rollback helm-lab
+release "shop" uninstalled
+namespace "helm-rollback" deleted
+namespace "helm-lab" deleted

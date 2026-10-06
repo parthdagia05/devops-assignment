@@ -1,0 +1,28 @@
+# Plain (non secret) settings for the Campus Portal app
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campus-config
+  namespace: session12
+  labels:
+    app: campus
+data:
+  APP_NAME: "Campus Portal"
+  ENVIRONMENT: "staging"
+  LOG_LEVEL: "debug"
+  MAX_UPLOAD_MB: "20"
+  FEATURE_DARK_MODE: "true"
+---
+# A whole config file stored in a ConfigMap, mounted into the Pod as a file
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campus-settings-file
+  namespace: session12
+  labels:
+    app: campus
+data:
+  app.properties: |
+    theme=dark
+    items.per.page=25
+    support.email=help@campus.local

@@ -1,0 +1,60 @@
+# Frontend: Nginx serving an index.html that comes from a ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: campus-web-html
+  namespace: session12
+data:
+  index.html: |
+    <!doctype html>
+    <html>
+    <head><title>Campus Portal</title></head>
+    <body style="font-family: sans-serif; margin: 40px">
+      <h1>Campus Portal</h1>
+      <p>Served by the <b>campus-web</b> Service through the NGINX Ingress Controller.</p>
+      <p>Try <a href="/api/courses">/api/courses</a> for the backend.</p>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campus-web
+  namespace: session12
+  labels:
+    app: campus-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: campus-web
+  template:
+    metadata:
+      labels:
+        app: campus-web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: html
+          configMap:
+            name: campus-web-html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: campus-web
+  namespace: session12
+spec:
+  type: ClusterIP
+  selector:
+    app: campus-web
+  ports:
+    - port: 80
+      targetPort: 80

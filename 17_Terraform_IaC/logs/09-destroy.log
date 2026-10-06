@@ -1,0 +1,171 @@
+$ terraform plan -destroy -no-color | tail -1
+  - versioning_status = "Enabled" -> null
+$ terraform destroy -auto-approve -no-color
+random_id.suffix: Refreshing state... [id=LKWT4w]
+aws_s3_bucket.demo: Refreshing state... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_bucket_versioning.demo: Refreshing state... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_bucket_public_access_block.demo: Refreshing state... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_bucket_server_side_encryption_configuration.demo: Refreshing state... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_object.hello: Refreshing state... [id=parth-tf-demo-dev-2ca593e3/hello.txt]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_s3_bucket.demo will be destroyed
+  - resource "aws_s3_bucket" "demo" {
+      - arn                         = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3" -> null
+      - bucket                      = "parth-tf-demo-dev-2ca593e3" -> null
+      - bucket_domain_name          = "parth-tf-demo-dev-2ca593e3.s3.amazonaws.com" -> null
+      - bucket_namespace            = "global" -> null
+      - bucket_region               = "ap-south-1" -> null
+      - bucket_regional_domain_name = "parth-tf-demo-dev-2ca593e3.s3.ap-south-1.amazonaws.com" -> null
+      - force_destroy               = true -> null
+      - hosted_zone_id              = "Z11RGJOFQNVJUP" -> null
+      - id                          = "parth-tf-demo-dev-2ca593e3" -> null
+      - object_lock_enabled         = false -> null
+      - region                      = "ap-south-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "Name" = "parth-tf-demo-dev-2ca593e3"
+        } -> null
+      - tags_all                    = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "parth-tf-demo-dev-2ca593e3"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session18-terraform"
+        } -> null
+        # (3 unchanged attributes hidden)
+
+      - grant {
+          - id          = "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a" -> null
+          - permissions = [
+              - "FULL_CONTROL",
+            ] -> null
+          - type        = "CanonicalUser" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - server_side_encryption_configuration {
+          - rule {
+              - bucket_key_enabled = false -> null
+
+              - apply_server_side_encryption_by_default {
+                  - sse_algorithm     = "AES256" -> null
+                    # (1 unchanged attribute hidden)
+                }
+            }
+        }
+
+      - versioning {
+          - enabled    = true -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+  # aws_s3_bucket_public_access_block.demo will be destroyed
+  - resource "aws_s3_bucket_public_access_block" "demo" {
+      - block_public_acls       = true -> null
+      - block_public_policy     = true -> null
+      - bucket                  = "parth-tf-demo-dev-2ca593e3" -> null
+      - id                      = "parth-tf-demo-dev-2ca593e3" -> null
+      - ignore_public_acls      = true -> null
+      - region                  = "ap-south-1" -> null
+      - restrict_public_buckets = true -> null
+    }
+
+  # aws_s3_bucket_server_side_encryption_configuration.demo will be destroyed
+  - resource "aws_s3_bucket_server_side_encryption_configuration" "demo" {
+      - bucket                = "parth-tf-demo-dev-2ca593e3" -> null
+      - id                    = "parth-tf-demo-dev-2ca593e3" -> null
+      - region                = "ap-south-1" -> null
+        # (1 unchanged attribute hidden)
+
+      - rule {
+          - blocked_encryption_types = [] -> null
+          - bucket_key_enabled       = false -> null
+
+          - apply_server_side_encryption_by_default {
+              - sse_algorithm     = "AES256" -> null
+                # (1 unchanged attribute hidden)
+            }
+        }
+    }
+
+  # aws_s3_bucket_versioning.demo will be destroyed
+  - resource "aws_s3_bucket_versioning" "demo" {
+      - bucket                = "parth-tf-demo-dev-2ca593e3" -> null
+      - id                    = "parth-tf-demo-dev-2ca593e3" -> null
+      - region                = "ap-south-1" -> null
+        # (1 unchanged attribute hidden)
+
+      - versioning_configuration {
+          - mfa_delete = "Disabled" -> null
+          - status     = "Enabled" -> null
+        }
+    }
+
+  # aws_s3_object.hello will be destroyed
+  - resource "aws_s3_object" "hello" {
+      - arn                           = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3/hello.txt" -> null
+      - bucket                        = "parth-tf-demo-dev-2ca593e3" -> null
+      - bucket_key_enabled            = false -> null
+      - content                       = <<-EOT
+            Hello from Terraform! Session 18, Parth Dagia (24BCS10414)
+        EOT -> null
+      - content_type                  = "text/plain" -> null
+      - etag                          = "ab582b5fd37eeb9e4910d1405781dcbf" -> null
+      - force_destroy                 = false -> null
+      - id                            = "parth-tf-demo-dev-2ca593e3/hello.txt" -> null
+      - key                           = "hello.txt" -> null
+      - metadata                      = {} -> null
+      - region                        = "ap-south-1" -> null
+      - server_side_encryption        = "AES256" -> null
+      - storage_class                 = "STANDARD" -> null
+      - tags                          = {} -> null
+      - tags_all                      = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session18-terraform"
+        } -> null
+      - version_id                    = "AaETao2gk9u8W_KDKdpJjbMrwQ5eVLJL" -> null
+        # (13 unchanged attributes hidden)
+    }
+
+  # random_id.suffix will be destroyed
+  - resource "random_id" "suffix" {
+      - b64_std     = "LKWT4w==" -> null
+      - b64_url     = "LKWT4w" -> null
+      - byte_length = 4 -> null
+      - dec         = "749048803" -> null
+      - hex         = "2ca593e3" -> null
+      - id          = "LKWT4w" -> null
+    }
+
+Plan: 0 to add, 0 to change, 6 to destroy.
+
+Changes to Outputs:
+  - bucket_arn        = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3" -> null
+  - bucket_name       = "parth-tf-demo-dev-2ca593e3" -> null
+  - bucket_region     = "ap-south-1" -> null
+  - sample_object_key = "hello.txt" -> null
+  - versioning_status = "Enabled" -> null
+aws_s3_bucket_public_access_block.demo: Destroying... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_bucket_server_side_encryption_configuration.demo: Destroying... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_object.hello: Destroying... [id=parth-tf-demo-dev-2ca593e3/hello.txt]
+aws_s3_bucket_server_side_encryption_configuration.demo: Destruction complete after 0s
+aws_s3_bucket_public_access_block.demo: Destruction complete after 0s
+aws_s3_object.hello: Destruction complete after 0s
+aws_s3_bucket_versioning.demo: Destroying... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_bucket_versioning.demo: Destruction complete after 0s
+aws_s3_bucket.demo: Destroying... [id=parth-tf-demo-dev-2ca593e3]
+aws_s3_bucket.demo: Destruction complete after 0s
+random_id.suffix: Destroying... [id=LKWT4w]
+random_id.suffix: Destruction complete after 0s
+
+Destroy complete! Resources: 6 destroyed.
+[exit code 0]

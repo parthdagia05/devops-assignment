@@ -1,0 +1,68 @@
+# Backend: tiny Python API. It prints which Pod answered, the path it got,
+# one value from the ConfigMap and one value from the Secret.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: campus-api
+  namespace: session12
+  labels:
+    app: campus-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: campus-api
+  template:
+    metadata:
+      labels:
+        app: campus-api
+    spec:
+      containers:
+        - name: api
+          image: python:3.11-alpine3.19
+          command:
+            - python3
+            - -c
+            - |
+              import os, socket
+              from http.server import HTTPServer, BaseHTTPRequestHandler
+              class H(BaseHTTPRequestHandler):
+                  def do_GET(self):
+                      body = (
+                          "Campus API\n"
+                          f"pod         : {socket.gethostname()}\n"
+                          f"path        : {self.path}\n"
+                          f"environment : {os.getenv('ENVIRONMENT')}\n"
+                          f"db_user     : {os.getenv('DB_USER')}\n"
+                      ).encode()
+                      self.send_response(200)
+                      self.send_header("Content-Type", "text/plain")
+                      self.end_headers()
+                      self.wfile.write(body)
+              HTTPServer(("0.0.0.0", 5000), H).serve_forever()
+          ports:
+            - containerPort: 5000
+          env:
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: campus-config
+                  key: ENVIRONMENT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: campus-db-secret
+                  key: DB_USER
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: campus-api
+  namespace: session12
+spec:
+  type: ClusterIP
+  selector:
+    app: campus-api
+  ports:
+    - port: 80
+      targetPort: 5000

@@ -1,0 +1,20 @@
+# An Ingress that asks for a controller that is NOT installed in the cluster.
+# Nothing will ever read this rule, so it has no effect.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ghost-ingress
+  namespace: session12
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: ghost.campus.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: campus-web
+                port:
+                  number: 80

@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-demo
+  namespace: session12
+  labels:
+    app: configmap-demo
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo started; sleep 3600"]
+      # 1) every key of the ConfigMap becomes an env variable
+      envFrom:
+        - configMapRef:
+            name: campus-config
+      # 2) one single key, renamed
+      env:
+        - name: PORTAL_TITLE
+          valueFrom:
+            configMapKeyRef:
+              name: campus-config
+              key: APP_NAME
+      # 3) the file ConfigMap mounted as a volume
+      volumeMounts:
+        - name: settings
+          mountPath: /etc/campus
+          readOnly: true
+  volumes:
+    - name: settings
+      configMap:
+        name: campus-settings-file

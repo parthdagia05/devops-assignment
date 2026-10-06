@@ -1,0 +1,27 @@
+$ helm install notes-dev notes-chart --wait
+NAME: notes-dev
+LAST DEPLOYED: Wed Oct  7 03:20:46 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+NOTES:
+Notes app "notes-dev" deployed (development).
+Replicas: 1   Image: nginx:1.24
+
+Access it:
+  kubectl port-forward svc/notes-dev-svc 8080:80
+  curl http://localhost:8080
+$ kubectl get pods,svc,cm -l 'app=notes-dev' ; kubectl get svc notes-dev-svc; kubectl get cm notes-dev-config
+NAME                                    READY   STATUS    RESTARTS   AGE
+pod/notes-dev-deploy-74956bd987-jskfh   1/1     Running   0          13s
+NAME            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+notes-dev-svc   NodePort   10.96.139.217   <none>        80:30090/TCP   13s
+NAME               DATA   AGE
+notes-dev-config   2      13s
+$ kubectl exec deploy/notes-dev-deploy -- env | grep -E 'APP_NAME|ENVIRONMENT'
+APP_NAME=notes-app
+ENVIRONMENT=development
+$ kubectl run curl --rm -i --restart=Never --image=curlimages/curl -q -- -s http://notes-dev-svc | grep -i '<title>'
+<title>Welcome to nginx!</title>

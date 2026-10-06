@@ -1,0 +1,9 @@
+{
+  "_comment": "Security gate policy: the maximum number of findings allowed per tool and severity. Anything above fails the pipeline.",
+  "bandit":   {"HIGH": 0, "MEDIUM": 0, "LOW": 5},
+  "semgrep":  {"ERROR": 0, "WARNING": 0, "INFO": 10},
+  "trivy-iac": {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 5},
+  "pip-audit": {"ANY": 0},
+  "gitleaks": {"ANY": 0},
+  "trivy-image": {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 10}
+}

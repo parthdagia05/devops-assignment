@@ -1,0 +1,10 @@
+$ helm uninstall notes-dev --wait
+release "notes-dev" uninstalled
+$ kubectl get pods,svc,cm -l app=notes-dev; kubectl get svc notes-dev-svc; kubectl get cm notes-dev-config
+NAME                                    READY   STATUS        RESTARTS   AGE
+pod/notes-dev-deploy-79b4dbdffd-khtnh   0/1     Terminating   0          21s
+pod/notes-dev-deploy-bbcc464b4-4rptx    0/1     Completed     0          22s
+pod/notes-dev-deploy-bbcc464b4-fh222    0/1     Completed     0          23s
+pod/notes-dev-deploy-bbcc464b4-qwnfl    0/1     Completed     0          22s
+Error from server (NotFound): services "notes-dev-svc" not found
+Error from server (NotFound): configmaps "notes-dev-config" not found

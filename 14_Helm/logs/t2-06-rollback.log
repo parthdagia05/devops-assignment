@@ -1,0 +1,2 @@
+$ helm rollback shop 2 -n helm-rollback --wait
+Rollback was a success! Happy Helming!

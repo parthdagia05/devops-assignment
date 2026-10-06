@@ -1,0 +1,19 @@
+$ helm upgrade notes-dev notes-chart -f notes-chart/values-prod.yaml --set image.tag=broken-tag-does-not-exist | head -7
+Release "notes-dev" has been upgraded. Happy Helming!
+NAME: notes-dev
+LAST DEPLOYED: Wed Oct  7 03:21:09 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 3
+DESCRIPTION: Upgrade complete
+$ kubectl get pods -l app=notes-dev
+NAME                                READY   STATUS             RESTARTS   AGE
+notes-dev-deploy-79b4dbdffd-khtnh   0/1     ImagePullBackOff   0          20s
+notes-dev-deploy-bbcc464b4-4rptx    1/1     Running            0          21s
+notes-dev-deploy-bbcc464b4-fh222    1/1     Running            0          22s
+notes-dev-deploy-bbcc464b4-qwnfl    1/1     Running            0          21s
+$ helm history notes-dev
+REVISION    UPDATED                     STATUS      CHART               APP VERSION DESCRIPTION     
+1           Wed Oct  7 03:20:46 2026    superseded  notes-chart-0.1.0   1.0         Install complete
+2           Wed Oct  7 03:21:07 2026    superseded  notes-chart-0.1.0   1.0         Upgrade complete
+3           Wed Oct  7 03:21:09 2026    deployed    notes-chart-0.1.0   1.0         Upgrade complete

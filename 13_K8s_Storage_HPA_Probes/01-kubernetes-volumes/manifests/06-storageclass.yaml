@@ -1,0 +1,8 @@
+# My own StorageClass using the local-path provisioner that kind ships with.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: fast-local
+provisioner: rancher.io/local-path
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer

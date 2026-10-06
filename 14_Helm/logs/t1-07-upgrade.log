@@ -1,0 +1,25 @@
+$ helm upgrade web myapp -n helm-lab --set replicaCount=3 --wait
+Release "web" has been upgraded. Happy Helming!
+NAME: web
+LAST DEPLOYED: Wed Oct  7 03:19:19 2026
+NAMESPACE: helm-lab
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace helm-lab -l "app.kubernetes.io/name=myapp,app.kubernetes.io/instance=web" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace helm-lab $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace helm-lab port-forward $POD_NAME 8080:$CONTAINER_PORT
+$ kubectl get deploy,pods -n helm-lab
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/web-myapp   3/3     3            3           2s
+
+NAME                             READY   STATUS    RESTARTS   AGE
+pod/web-myapp-6765fffd56-27dg8   1/1     Running   0          2s
+pod/web-myapp-6765fffd56-cvsgd   1/1     Running   0          1s
+pod/web-myapp-6765fffd56-hbhbs   1/1     Running   0          1s
+$ helm get values web -n helm-lab
+USER-SUPPLIED VALUES:
+replicaCount: 3

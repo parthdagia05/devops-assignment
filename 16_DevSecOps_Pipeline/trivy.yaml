@@ -1,0 +1,14 @@
+# Trivy configuration (used for the container image scan and the IaC scan)
+# Trivy reads this file automatically from the current directory.
+severity:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+vulnerability:
+  # Report only vulnerabilities that have a fixed version available
+  ignore-unfixed: true
+scan:
+  skip-dirs:
+    - .venv
+    - logs
+    - screenshots

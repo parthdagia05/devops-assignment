@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+coverage.xml
+test-results.xml
+.venv/
+venv/
+build/
+reports/
+*.tar
+.DS_Store
+.env
+*.raw

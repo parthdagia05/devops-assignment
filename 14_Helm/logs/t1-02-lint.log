@@ -1,0 +1,17 @@
+$ helm lint myapp
+==> Linting myapp
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+$ helm template web myapp --set replicaCount=2 | grep -E '^(kind|  name|  replicas|          image)'
+kind: ServiceAccount
+  name: web-myapp
+kind: Service
+  name: web-myapp
+kind: Deployment
+  name: web-myapp
+  replicas: 2
+          image: "nginx:1.27"
+          imagePullPolicy: IfNotPresent
+kind: Pod
+  name: "web-myapp-test-connection"

@@ -1,0 +1,42 @@
+$ python security/gate.py reports security/policy.json
+Stage        Tool         Found                         Allowed                           Result
+-----------  -----------  ----------------------------  --------------------------------  ------
+SAST         bandit       HIGH=0, MEDIUM=0, LOW=0       HIGH<=0, MEDIUM<=0, LOW<=5        PASS  
+SAST         semgrep      ERROR=0, WARNING=0, INFO=0    ERROR<=0, WARNING<=0, INFO<=10    PASS  
+SAST         trivy-iac    CRITICAL=0, HIGH=0, MEDIUM=0  CRITICAL<=0, HIGH<=0, MEDIUM<=5   PASS  
+SCA          pip-audit    ANY=14                        ANY<=0                            FAIL  
+Secret scan  gitleaks     ANY=0                         ANY<=0                            PASS  
+Image scan   trivy-image  CRITICAL=1, HIGH=6, MEDIUM=7  CRITICAL<=0, HIGH<=0, MEDIUM<=10  FAIL  
+
+Findings:
+  pip-audit: [ANY] idna==2.10 PYSEC-2024-60 (fix: 3.7)
+  pip-audit: [ANY] idna==2.10 PYSEC-2026-215 (fix: 3.15)
+  pip-audit: [ANY] pyyaml==5.3.1 PYSEC-2021-142 (fix: 5.4)
+  pip-audit: [ANY] requests==2.25.0 PYSEC-2023-74 (fix: 2.31.0)
+  pip-audit: [ANY] requests==2.25.0 PYSEC-2026-1872 (fix: 2.32.4)
+  pip-audit: [ANY] requests==2.25.0 PYSEC-2026-1873 (fix: 2.32.0)
+  pip-audit: [ANY] requests==2.25.0 PYSEC-2026-2275 (fix: 2.33.0)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-141 (fix: 2.7.0)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-1994 (fix: 2.6.0)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-1996 (fix: 2.6.3)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-1998 (fix: 2.6.0)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-1999 (fix: 2.5.0)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-4175 (fix: 2.8.0)
+  pip-audit: [ANY] urllib3==1.26.20 PYSEC-2026-4177 (fix: 2.8.0)
+  trivy-image: [CRITICAL] CVE-2020-14343 PyYAML 5.3.1 -> 5.4
+  trivy-image: [MEDIUM] CVE-2024-3651 idna 2.10 -> 3.7
+  trivy-image: [MEDIUM] CVE-2026-45409 idna 2.10 -> 3.15
+  trivy-image: [MEDIUM] CVE-2023-32681 requests 2.25.0 -> 2.31.0
+  trivy-image: [MEDIUM] CVE-2024-35195 requests 2.25.0 -> 2.32.0
+  trivy-image: [MEDIUM] CVE-2024-47081 requests 2.25.0 -> 2.32.4
+  trivy-image: [MEDIUM] CVE-2026-25645 requests 2.25.0 -> 2.33.0
+  trivy-image: [HIGH] CVE-2025-66418 urllib3 1.26.20 -> 2.6.0
+  trivy-image: [HIGH] CVE-2025-66471 urllib3 1.26.20 -> 2.6.0
+  trivy-image: [HIGH] CVE-2026-21441 urllib3 1.26.20 -> 2.6.3
+  trivy-image: [HIGH] CVE-2026-44431 urllib3 1.26.20 -> 2.7.0
+  trivy-image: [HIGH] CVE-2026-97687 urllib3 1.26.20 -> 2.8.0
+  trivy-image: [HIGH] CVE-2026-97689 urllib3 1.26.20 -> 2.8.0
+  trivy-image: [MEDIUM] CVE-2025-50181 urllib3 1.26.20 -> 2.5.0
+
+Security gate FAILED - image will NOT be pushed or deployed
+exit code: 1

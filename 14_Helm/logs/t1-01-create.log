@@ -1,0 +1,19 @@
+$ helm create myapp-demo
+Creating myapp-demo
+$ find myapp | sort
+myapp
+myapp/.helmignore
+myapp/Chart.yaml
+myapp/charts
+myapp/templates
+myapp/templates/NOTES.txt
+myapp/templates/_helpers.tpl
+myapp/templates/deployment.yaml
+myapp/templates/hpa.yaml
+myapp/templates/httproute.yaml
+myapp/templates/ingress.yaml
+myapp/templates/service.yaml
+myapp/templates/serviceaccount.yaml
+myapp/templates/tests
+myapp/templates/tests/test-connection.yaml
+myapp/values.yaml

@@ -1,0 +1,19 @@
+$ cat app/admin.py
+import subprocess
+
+from flask import request
+
+from app.main import app
+
+app.config["SECRET_KEY"] = "dev-secret"
+
+
+@app.get("/admin/ping")
+def ping():
+    host = request.args.get("host", "localhost")
+    out = subprocess.check_output("ping -c 1 " + host, shell=True)
+    return out
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)

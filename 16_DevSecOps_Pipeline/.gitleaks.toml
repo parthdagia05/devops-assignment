@@ -1,0 +1,24 @@
+# Gitleaks (secret scanning) configuration
+title = "session17-devsecops gitleaks config"
+
+[extend]
+# Start from all of gitleaks' built-in rules (AWS, GitHub, Slack, private keys, ...)
+useDefault = true
+
+# Extra rule: any variable named *password*/*secret*/*token* assigned a long literal
+[[rules]]
+id = "generic-hardcoded-credential"
+description = "Hardcoded password / secret / token"
+regex = '''(?i)(password|passwd|secret|token|api_key)\s*[:=]\s*["']([^"'\s]{12,})["']'''
+secretGroup = 2
+entropy = 3.0
+keywords = ["password", "passwd", "secret", "token", "api_key"]
+
+[allowlist]
+description = "Generated files that are not source code"
+# Paths are relative to the git root, so match the folder name anywhere in the path
+paths = [
+  '''(^|/)logs/''',
+  '''(^|/)screenshots/''',
+  '''(^|/)reports/''',
+]

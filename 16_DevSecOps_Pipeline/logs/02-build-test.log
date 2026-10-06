@@ -1,0 +1,37 @@
+$ flake8 app tests security && echo "flake8: no issues"
+flake8: no issues
+$ python -m compileall -q app && echo "app/ compiled without errors"
+app/ compiled without errors
+$ pytest -v --cov=app --cov-report=term --cov-fail-under=90 -p no:cacheprovider
+============================= test session starts ==============================
+platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0 -- /Users/parthdagia/devOps/16_DevSecOps_Pipeline/.venv/bin/python3.14
+rootdir: /Users/parthdagia/devOps/16_DevSecOps_Pipeline
+configfile: setup.cfg
+testpaths: tests
+plugins: cov-7.1.0, platformdirs-4.12.3, anyio-4.15.1
+collecting ... collected 11 items
+
+tests/test_api.py::test_index PASSED                                     [  9%]
+tests/test_api.py::test_health PASSED                                    [ 18%]
+tests/test_api.py::test_security_headers PASSED                          [ 27%]
+tests/test_api.py::test_create_and_list PASSED                           [ 36%]
+tests/test_api.py::test_create_invalid PASSED                            [ 45%]
+tests/test_api.py::test_get_and_delete PASSED                            [ 54%]
+tests/test_notes.py::test_add_and_get PASSED                             [ 63%]
+tests/test_notes.py::test_ids_increase PASSED                            [ 72%]
+tests/test_notes.py::test_title_required PASSED                          [ 81%]
+tests/test_notes.py::test_title_too_long PASSED                          [ 90%]
+tests/test_notes.py::test_delete PASSED                                  [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.14.6-final-0 _______________
+
+Name              Stmts   Miss  Cover
+-------------------------------------
+app/__init__.py       0      0   100%
+app/main.py          43      1    98%
+app/notes.py         31      1    97%
+-------------------------------------
+TOTAL                74      2    97%
+Required test coverage of 90% reached. Total coverage: 97.30%
+============================== 11 passed in 0.07s ==============================

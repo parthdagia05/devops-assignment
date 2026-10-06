@@ -1,0 +1,11 @@
+$ terraform output
+bucket_arn = "arn:aws:s3:::parth-tf-demo-dev-2ca593e3"
+bucket_name = "parth-tf-demo-dev-2ca593e3"
+bucket_region = "ap-south-1"
+sample_object_key = "hello.txt"
+versioning_status = "Enabled"
+$ terraform output -raw bucket_name
+parth-tf-demo-dev-2ca593e3
+$ terraform output -json versioning_status
+"Enabled"
+

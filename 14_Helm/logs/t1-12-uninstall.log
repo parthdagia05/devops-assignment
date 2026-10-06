@@ -1,0 +1,7 @@
+$ helm uninstall web -n helm-lab --wait
+release "web" uninstalled
+$ helm list -n helm-lab
+NAME    NAMESPACE   REVISION    UPDATED STATUS  CHART   APP VERSION
+$ kubectl get all -n helm-lab
+NAME                             READY   STATUS      RESTARTS   AGE
+pod/web-myapp-6765fffd56-27dg8   0/1     Completed   0          22s

@@ -1,0 +1,45 @@
+# The application: connects to Postgres every 10 seconds with the
+# credentials from yatri-app-db-secret. If it cannot log in, it exits (like a real app).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yatri-app
+  namespace: session12
+  labels:
+    app: yatri-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yatri-app
+  template:
+    metadata:
+      labels:
+        app: yatri-app
+    spec:
+      containers:
+        - name: app
+          image: postgres:16-alpine   # only used for the psql client
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                if psql -h yatri-postgres -U "$DB_USER" -d yatri_production_db -tAc "select 'connected to ' || current_database() || ' as ' || current_user"; then
+                  sleep 10
+                else
+                  echo "app: cannot connect to the database, exiting"
+                  exit 1
+                fi
+              done
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: yatri-app-db-secret
+                  key: DB_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: yatri-app-db-secret
+                  key: DB_PASSWORD

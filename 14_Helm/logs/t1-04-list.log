@@ -1,0 +1,6 @@
+$ helm list -n helm-lab
+NAME    NAMESPACE   REVISION    UPDATED                                 STATUS      CHART       APP VERSION
+web     helm-lab    1           2026-10-07 03:19:18.108006 +0530 IST    deployed    myapp-0.1.0 1.16.0     
+$ helm list -A
+NAME    NAMESPACE   REVISION    UPDATED                                 STATUS      CHART       APP VERSION
+web     helm-lab    1           2026-10-07 03:19:18.108006 +0530 IST    deployed    myapp-0.1.0 1.16.0     

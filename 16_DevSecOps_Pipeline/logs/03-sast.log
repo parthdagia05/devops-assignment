@@ -1,0 +1,80 @@
+$ bandit -c security/bandit.yaml -r app
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	using config: security/bandit.yaml
+[main]	INFO	running on Python 3.14.6
+Run started:2026-10-06 22:34:38.453042+00:00
+
+Test results:
+	No issues identified.
+
+Code scanned:
+	Total lines of code: 86
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 0
+		Medium: 0
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 0
+		High: 0
+Files skipped (0):
+$ semgrep scan --config security/semgrep.yml --config p/python --config p/flask --config p/secrets --metrics=off app
+               
+               
+┌─────────────┐
+│ Scan Status │
+└─────────────┘
+  Scanning 3 files tracked by git with 207 Code rules:
+                                                                                                                        
+  Language      Rules   Files          Origin      Rules                                                                
+ ─────────────────────────────        ───────────────────                                                               
+  python          156       3          Community     202                                                                
+  <multilang>      36       3          Custom          5                                                                
+                                                                                                                        
+                
+                
+┌──────────────┐
+│ Scan Summary │
+└──────────────┘
+✅ Scan completed successfully.
+ • Findings: 0 (0 blocking)
+ • Rules run: 192
+ • Targets scanned: 3
+ • Parsed lines: ~100.0%
+ • Scan was limited to files tracked by git
+ • For a detailed list of skipped files and lines, run semgrep with the --verbose flag
+Ran 192 rules on 3 files: 0 findings.
+(need more rules? `semgrep login` for additional free Semgrep Registry rules)
+
+If Semgrep missed a finding, please send us feedback to let us know!
+See https://semgrep.dev/docs/reporting-false-negatives/
+$ docker run --rm -v "$PWD":/src -w /src aquasec/trivy:0.75.0 config --quiet .
+
+Report Summary
+
+┌────────────────────────┬────────────┬───────────────────┐
+│         Target         │    Type    │ Misconfigurations │
+├────────────────────────┼────────────┼───────────────────┤
+│ Dockerfile             │ dockerfile │         0         │
+├────────────────────────┼────────────┼───────────────────┤
+│ k8s/deployment.yaml    │ kubernetes │         0         │
+├────────────────────────┼────────────┼───────────────────┤
+│ k8s/namespace.yaml     │ kubernetes │         0         │
+├────────────────────────┼────────────┼───────────────────┤
+│ k8s/networkpolicy.yaml │ kubernetes │         0         │
+├────────────────────────┼────────────┼───────────────────┤
+│ k8s/service.yaml       │ kubernetes │         0         │
+└────────────────────────┴────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+

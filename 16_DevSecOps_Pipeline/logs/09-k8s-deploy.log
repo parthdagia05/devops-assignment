@@ -1,0 +1,31 @@
+$ kind load docker-image notes-api:local --name devops-lab
+Image: "notes-api:local" with ID "sha256:0135c158e7e4f45423f178eb02abb2f9d06eb8ae13e2923a217c5570a3a24650" not yet present on node "devops-lab-worker", loading...
+Image: "notes-api:local" with ID "sha256:0135c158e7e4f45423f178eb02abb2f9d06eb8ae13e2923a217c5570a3a24650" not yet present on node "devops-lab-control-plane", loading...
+$ kubectl apply -k k8s
+namespace/devsecops created
+service/notes-api created
+deployment.apps/notes-api created
+networkpolicy.networking.k8s.io/notes-api created
+$ kubectl -n devsecops rollout status deployment/notes-api --timeout=120s
+Waiting for deployment "notes-api" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "notes-api" rollout to finish: 1 of 2 updated replicas are available...
+deployment "notes-api" successfully rolled out
+$ kubectl -n devsecops get deploy,rs,pods,svc,networkpolicy -o wide
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES            SELECTOR
+deployment.apps/notes-api   2/2     2            2           6s    notes-api    notes-api:local   app=notes-api
+
+NAME                                   DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES            SELECTOR
+replicaset.apps/notes-api-7c9556798c   2         2         2       6s    notes-api    notes-api:local   app=notes-api,pod-template-hash=7c9556798c
+
+NAME                             READY   STATUS    RESTARTS   AGE   IP             NODE                NOMINATED NODE   READINESS GATES
+pod/notes-api-7c9556798c-br6np   1/1     Running   0          6s    10.244.1.126   devops-lab-worker   <none>           <none>
+pod/notes-api-7c9556798c-jqxgd   1/1     Running   0          6s    10.244.1.125   devops-lab-worker   <none>           <none>
+
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE   SELECTOR
+service/notes-api   ClusterIP   10.96.102.208   <none>        80/TCP    6s    app=notes-api
+
+NAME                                        POD-SELECTOR    AGE
+networkpolicy.networking.k8s.io/notes-api   app=notes-api   6s
+$ kubectl get ns devsecops --show-labels
+NAME        STATUS   AGE   LABELS
+devsecops   Active   6s    kubernetes.io/metadata.name=devsecops,pod-security.kubernetes.io/enforce=restricted,pod-security.kubernetes.io/warn=restricted

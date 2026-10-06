@@ -1,0 +1,37 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: campus-ingress
+  namespace: session12
+spec:
+  ingressClassName: nginx
+  rules:
+    # Path based routing on one host
+    - host: campus.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: campus-api
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: campus-web
+                port:
+                  number: 80
+    # Host based routing: a second host name goes straight to the API
+    - host: api.campus.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: campus-api
+                port:
+                  number: 80

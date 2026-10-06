@@ -1,0 +1,91 @@
+$ helm get values web -n helm-lab
+USER-SUPPLIED VALUES:
+null
+$ helm get values web -n helm-lab --all | head -25
+COMPUTED VALUES:
+affinity: {}
+autoscaling:
+  enabled: false
+  maxReplicas: 100
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 80
+fullnameOverride: ""
+httpRoute:
+  annotations: {}
+  enabled: false
+  hostnames:
+  - chart-example.local
+  parentRefs:
+  - name: gateway
+    sectionName: http
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /headers
+image:
+  pullPolicy: IfNotPresent
+  repository: nginx
+  tag: "1.27"
+$ helm get manifest web -n helm-lab | head -40
+---
+# Source: myapp/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web-myapp
+  labels:
+    helm.sh/chart: myapp-0.1.0
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+automountServiceAccountToken: true
+
+---
+# Source: myapp/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-myapp
+  labels:
+    helm.sh/chart: myapp-0.1.0
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: web
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: myapp
+    app.kubernetes.io/instance: web
+
+---
+# Source: myapp/templates/deployment.yaml
+apiVersion: apps/v1
+$ helm get notes web -n helm-lab
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace helm-lab -l "app.kubernetes.io/name=myapp,app.kubernetes.io/instance=web" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace helm-lab $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:8080 to use your application"
+  kubectl --namespace helm-lab port-forward $POD_NAME 8080:$CONTAINER_PORT
+
+$ helm get metadata web -n helm-lab
+NAME: web
+CHART: myapp
+VERSION: 0.1.0
+APP_VERSION: 1.16.0
+ANNOTATIONS: 
+LABELS: modifiedAt=1791323359,name=web,owner=helm,status=deployed,version=1
+DEPENDENCIES: 
+NAMESPACE: helm-lab
+REVISION: 1
+STATUS: deployed
+DEPLOYED_AT: 2026-10-07T03:19:18+05:30
+APPLY_METHOD: server-side apply

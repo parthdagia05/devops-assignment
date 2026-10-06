@@ -1,0 +1,24 @@
+$ ./security/scan-local.sh   # first run, image still contains pip
+...
+Stage        Tool         Found                          Allowed                           Result
+-----------  -----------  -----------------------------  --------------------------------  ------
+SAST         bandit       HIGH=0, MEDIUM=0, LOW=0        HIGH<=0, MEDIUM<=0, LOW<=5        PASS  
+SAST         semgrep      ERROR=0, WARNING=0, INFO=0     ERROR<=0, WARNING<=0, INFO<=10    PASS  
+SAST         trivy-iac    CRITICAL=0, HIGH=0, MEDIUM=0   CRITICAL<=0, HIGH<=0, MEDIUM<=5   PASS  
+SCA          pip-audit    ANY=0                          ANY<=0                            PASS  
+Secret scan  gitleaks     ANY=0                          ANY<=0                            PASS  
+Image scan   trivy-image  CRITICAL=0, HIGH=0, MEDIUM=10  CRITICAL<=0, HIGH<=0, MEDIUM<=10  PASS  
+
+Findings:
+  trivy-image: [MEDIUM] CVE-2025-8869 pip 25.0.1 -> 25.3
+  trivy-image: [MEDIUM] CVE-2025-8869 pip 25.0.1 -> 25.3
+  trivy-image: [MEDIUM] CVE-2026-13346 pip 25.0.1 -> 26.2.0
+  trivy-image: [MEDIUM] CVE-2026-13346 pip 25.0.1 -> 26.2.0
+  trivy-image: [MEDIUM] CVE-2026-3219 pip 25.0.1 -> 26.1
+  trivy-image: [MEDIUM] CVE-2026-3219 pip 25.0.1 -> 26.1
+  trivy-image: [MEDIUM] CVE-2026-6357 pip 25.0.1 -> 26.1
+  trivy-image: [MEDIUM] CVE-2026-6357 pip 25.0.1 -> 26.1
+  trivy-image: [MEDIUM] CVE-2026-8643 pip 25.0.1 -> 26.1.2
+  trivy-image: [MEDIUM] CVE-2026-8643 pip 25.0.1 -> 26.1.2
+
+Security gate PASSED - image may be pushed and deployed

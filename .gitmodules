@@ -1,0 +1,3 @@
+[submodule "15_CICD_GitHub_Actions"]
+	path = 15_CICD_GitHub_Actions
+	url = https://github.com/parthdagia05/session16-cicd-github-actions.git

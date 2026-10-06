@@ -1,0 +1,5 @@
+$ terraform state list   # empty after destroy
+$ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4566/parth-tf-demo-dev-2ca593e3
+404
+$ terraform show -no-color
+The state file is empty. No resources are represented.

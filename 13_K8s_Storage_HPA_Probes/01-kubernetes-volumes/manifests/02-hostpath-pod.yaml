@@ -1,0 +1,19 @@
+# Mounts a folder from the node itself. Data stays on that node only.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-demo
+  namespace: session13
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo written-by-$(hostname) >> /host-data/hello.txt; sleep 3600"]
+      volumeMounts:
+        - name: host
+          mountPath: /host-data
+  volumes:
+    - name: host
+      hostPath:
+        path: /tmp/session13-hostpath
+        type: DirectoryOrCreate

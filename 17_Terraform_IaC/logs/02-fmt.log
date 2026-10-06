@@ -1,0 +1,4 @@
+$ terraform fmt -check -diff -recursive
+[exit code 0]
+$ terraform fmt -recursive
+[exit code 0]   # no file names printed = nothing needed reformatting
