@@ -1,0 +1,60 @@
+$ aws ec2 describe-vpcs --vpc-ids vpc-5fa447bc340b3a57e --query 'Vpcs[].[VpcId,CidrBlock,State]' --output table
+-------------------------------------------------------
+|                    DescribeVpcs                     |
++------------------------+---------------+------------+
+|  vpc-5fa447bc340b3a57e |  10.0.0.0/16  |  available |
++------------------------+---------------+------------+
+[exit code 0]
+$ aws ec2 describe-subnets --filters Name=vpc-id,Values=vpc-5fa447bc340b3a57e --query 'Subnets[].[SubnetId,CidrBlock,AvailabilityZone,MapPublicIpOnLaunch]' --output table
+--------------------------------------------------------------------
+|                          DescribeSubnets                         |
++---------------------------+--------------+--------------+--------+
+|  subnet-247acf240e16e7e91 |  10.0.1.0/24 |  ap-south-1a |  True  |
++---------------------------+--------------+--------------+--------+
+[exit code 0]
+$ aws ec2 describe-route-tables --filters Name=vpc-id,Values=vpc-5fa447bc340b3a57e Name=association.main,Values=false --query 'RouteTables[].Routes[].[DestinationCidrBlock,GatewayId]' --output table
+------------------------------------------
+|           DescribeRouteTables          |
++--------------+-------------------------+
+|  10.0.0.0/16 |  local                  |
+|  0.0.0.0/0   |  igw-f3a8ee5b013cdc3f5  |
++--------------+-------------------------+
+[exit code 0]
+$ aws ec2 describe-security-group-rules --filters Name=group-id,Values=sg-9617f05a855df0bfb --query 'SecurityGroupRules[].[IsEgress,IpProtocol,FromPort,ToPort,CidrIpv4]' --output table
+-------------------------------------------------
+|          DescribeSecurityGroupRules           |
++-------+------+-----+-----+--------------------+
+|  True |  -1  |  -1 |  -1 |  0.0.0.0/0         |
+|  False|  tcp |  80 |  80 |  0.0.0.0/0         |
+|  False|  tcp |  22 |  22 |  203.0.113.10/32   |
++-------+------+-----+-----+--------------------+
+[exit code 0]
+$ aws ec2 describe-instances --instance-ids i-01a3b942f708b1b1c --query 'Reservations[].Instances[].[InstanceId,InstanceType,State.Name,SubnetId,PublicIpAddress]' --output table
+---------------------------------------------------------------------------------------------
+|                                     DescribeInstances                                     |
++----------------------+-----------+----------+----------------------------+----------------+
+|  i-01a3b942f708b1b1c |  t3.micro |  running |  subnet-247acf240e16e7e91  |  54.214.118.96 |
++----------------------+-----------+----------+----------------------------+----------------+
+[exit code 0]
+$ aws s3 ls s3://parth-s19-assets-dev-a06fbc57 --recursive
+2026-10-06 23:16:10        136 site/index.html
+[exit code 0]
+$ aws s3 cp s3://parth-s19-assets-dev-a06fbc57/site/index.html -
+<h1>Session 19: Cloud &amp; Terraform in Action</h1>
+<p>Served by EC2 in 10.0.1.0/24, page pulled from S3. Parth Dagia (24BCS10414)</p>
+[exit code 0]
+$ aws s3api get-bucket-versioning --bucket parth-s19-assets-dev-a06fbc57
+{
+    "Status": "Enabled"
+}
+[exit code 0]
+$ aws s3api get-public-access-block --bucket parth-s19-assets-dev-a06fbc57
+{
+    "PublicAccessBlockConfiguration": {
+        "BlockPublicAcls": true,
+        "IgnorePublicAcls": true,
+        "BlockPublicPolicy": true,
+        "RestrictPublicBuckets": true
+    }
+}
+[exit code 0]

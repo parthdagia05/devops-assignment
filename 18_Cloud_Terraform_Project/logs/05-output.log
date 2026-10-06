@@ -1,0 +1,12 @@
+$ terraform output -no-color
+ami_id = "ami-1e749f67"
+availability_zone = "ap-south-1a"
+bucket_arn = "arn:aws:s3:::parth-s19-assets-dev-a06fbc57"
+bucket_name = "parth-s19-assets-dev-a06fbc57"
+instance_id = "i-01a3b942f708b1b1c"
+instance_public_ip = "54.214.118.96"
+public_subnet_id = "subnet-247acf240e16e7e91"
+security_group_id = "sg-9617f05a855df0bfb"
+vpc_id = "vpc-5fa447bc340b3a57e"
+website_url = "http://54.214.118.96"
+[exit code 0]

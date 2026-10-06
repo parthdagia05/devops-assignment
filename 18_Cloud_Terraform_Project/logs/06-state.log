@@ -1,0 +1,122 @@
+$ terraform state list
+data.aws_ami.ubuntu
+data.aws_availability_zones.available
+aws_iam_instance_profile.ec2
+aws_iam_role.ec2
+aws_iam_role_policy.s3_read
+aws_instance.web
+aws_internet_gateway.main
+aws_route_table.public
+aws_route_table_association.public
+aws_s3_bucket.assets
+aws_s3_bucket_public_access_block.assets
+aws_s3_bucket_server_side_encryption_configuration.assets
+aws_s3_bucket_versioning.assets
+aws_s3_object.index
+aws_security_group.web
+aws_subnet.public
+aws_vpc.main
+aws_vpc_security_group_egress_rule.all
+aws_vpc_security_group_ingress_rule.http
+aws_vpc_security_group_ingress_rule.ssh
+random_id.suffix
+[exit code 0]
+$ terraform state show -no-color aws_instance.web
+# aws_instance.web:
+resource "aws_instance" "web" {
+    ami                                  = "ami-1e749f67"
+    arn                                  = "arn:aws:ec2:ap-south-1::instance/i-01a3b942f708b1b1c"
+    associate_public_ip_address          = true
+    availability_zone                    = "ap-south-1a"
+    disable_api_stop                     = false
+    disable_api_termination              = false
+    ebs_optimized                        = false
+    force_destroy                        = false
+    get_password_data                    = false
+    hibernation                          = false
+    host_id                              = null
+    iam_instance_profile                 = "session19-cloud-tf-dev-ec2-profile"
+    id                                   = "i-01a3b942f708b1b1c"
+    instance_initiated_shutdown_behavior = "stop"
+    instance_lifecycle                   = null
+    instance_state                       = "running"
+    instance_type                        = "t3.micro"
+    ipv6_address_count                   = 0
+    ipv6_addresses                       = []
+    key_name                             = null
+    monitoring                           = false
+    outpost_arn                          = null
+    password_data                        = null
+    placement_group                      = null
+    placement_group_id                   = null
+    placement_partition_number           = 0
+    primary_network_interface_id         = "eni-bfe0c2706a75a232d"
+    private_dns                          = "ip-10-0-1-4.ap-south-1.compute.internal"
+    private_ip                           = "10.0.1.4"
+    public_dns                           = "ec2-54-214-118-96.ap-south-1.compute.amazonaws.com"
+    public_ip                            = "54.214.118.96"
+    region                               = "ap-south-1"
+    secondary_private_ips                = []
+    security_groups                      = []
+    source_dest_check                    = true
+    spot_instance_request_id             = null
+    subnet_id                            = "subnet-247acf240e16e7e91"
+    tags                                 = {
+        "Name" = "session19-cloud-tf-dev-web"
+    }
+    tags_all                             = {
+        "Env"       = "dev"
+        "ManagedBy" = "Terraform"
+        "Name"      = "session19-cloud-tf-dev-web"
+        "Owner"     = "Parth Dagia"
+        "Project"   = "session19-cloud-tf"
+    }
+    tenancy                              = "default"
+    user_data                            = <<-EOT
+        #!/bin/bash
+        apt-get update -y
+        apt-get install -y nginx awscli
+        aws s3 cp s3://parth-s19-assets-dev-a06fbc57/site/index.html /var/www/html/index.html
+        systemctl enable --now nginx
+    EOT
+    user_data_replace_on_change          = false
+    vpc_security_group_ids               = [
+        "sg-9617f05a855df0bfb",
+    ]
+
+    credit_specification {
+        cpu_credits = "standard"
+    }
+
+    metadata_options {
+        http_endpoint               = "enabled"
+        http_protocol_ipv6          = "disabled"
+        http_put_response_hop_limit = 1
+        http_tokens                 = "required"
+        instance_metadata_tags      = "disabled"
+    }
+
+    primary_network_interface {
+        delete_on_termination = false
+        network_interface_id  = "eni-bfe0c2706a75a232d"
+    }
+
+    root_block_device {
+        delete_on_termination = true
+        device_name           = "/dev/sda1"
+        encrypted             = true
+        iops                  = 3000
+        kms_key_id            = "arn:aws:kms:ap-south-1:000000000000:key/c1624527-2033-4c5e-9f5a-ec37b04e0d28"
+        tags_all              = {
+            "Env"       = "dev"
+            "ManagedBy" = "Terraform"
+            "Owner"     = "Parth Dagia"
+            "Project"   = "session19-cloud-tf"
+        }
+        throughput            = 0
+        volume_id             = "vol-754ec57df54c9f0ff"
+        volume_size           = 8
+        volume_type           = "gp3"
+    }
+}
+[exit code 0]

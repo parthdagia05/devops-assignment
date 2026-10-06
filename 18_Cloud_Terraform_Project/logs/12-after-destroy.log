@@ -1,0 +1,15 @@
+$ terraform state list   # empty
+[exit code 0]
+$ aws ec2 describe-instances --instance-ids i-01a3b942f708b1b1c --query 'Reservations[].Instances[].State.Name'
+[
+    "terminated"
+]
+[exit code 0]
+$ aws ec2 describe-vpcs --vpc-ids vpc-5fa447bc340b3a57e
+
+An error occurred (InvalidVpcID.NotFound) when calling the DescribeVpcs operation: VpcID {'vpc-5fa447bc340b3a57e'} does not exist.
+[exit code 255]
+$ aws s3 ls s3://parth-s19-assets-dev-a06fbc57
+
+An error occurred (NoSuchBucket) when calling the ListObjectsV2 operation: The specified bucket does not exist
+[exit code 255]

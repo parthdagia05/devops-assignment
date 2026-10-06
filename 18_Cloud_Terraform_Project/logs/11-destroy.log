@@ -1,0 +1,655 @@
+$ terraform destroy -auto-approve -no-color
+random_id.suffix: Refreshing state... [id=oG-8Vw]
+data.aws_availability_zones.available: Reading...
+data.aws_ami.ubuntu: Reading...
+aws_vpc.main: Refreshing state... [id=vpc-5fa447bc340b3a57e]
+aws_iam_role.ec2: Refreshing state... [id=session19-cloud-tf-dev-ec2-role]
+aws_s3_bucket.assets: Refreshing state... [id=parth-s19-assets-dev-a06fbc57]
+data.aws_availability_zones.available: Read complete after 0s [id=ap-south-1]
+data.aws_ami.ubuntu: Read complete after 0s [id=ami-1e749f67]
+aws_iam_instance_profile.ec2: Refreshing state... [id=session19-cloud-tf-dev-ec2-profile]
+aws_internet_gateway.main: Refreshing state... [id=igw-f3a8ee5b013cdc3f5]
+aws_security_group.web: Refreshing state... [id=sg-9617f05a855df0bfb]
+aws_subnet.public: Refreshing state... [id=subnet-247acf240e16e7e91]
+aws_route_table.public: Refreshing state... [id=rtb-5f416dfe008c74ecd]
+aws_vpc_security_group_ingress_rule.http: Refreshing state... [id=sgr-fbb7f73f20a7efd7f]
+aws_vpc_security_group_ingress_rule.ssh: Refreshing state... [id=sgr-1eb355e18859e55c4]
+aws_vpc_security_group_egress_rule.all: Refreshing state... [id=sgr-fb29386f7da312a69]
+aws_route_table_association.public: Refreshing state... [id=rtbassoc-464c5a6eb58cf332b]
+aws_iam_role_policy.s3_read: Refreshing state... [id=session19-cloud-tf-dev-ec2-role:read-assets-bucket]
+aws_s3_bucket_versioning.assets: Refreshing state... [id=parth-s19-assets-dev-a06fbc57]
+aws_s3_bucket_server_side_encryption_configuration.assets: Refreshing state... [id=parth-s19-assets-dev-a06fbc57]
+aws_s3_bucket_public_access_block.assets: Refreshing state... [id=parth-s19-assets-dev-a06fbc57]
+aws_s3_object.index: Refreshing state... [id=parth-s19-assets-dev-a06fbc57/site/index.html]
+aws_instance.web: Refreshing state... [id=i-01a3b942f708b1b1c]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  - destroy
+
+Terraform will perform the following actions:
+
+  # aws_iam_instance_profile.ec2 will be destroyed
+  - resource "aws_iam_instance_profile" "ec2" {
+      - arn         = "arn:aws:iam::000000000000:instance-profile/session19-cloud-tf-dev-ec2-profile" -> null
+      - create_date = "2026-10-06T23:16:10Z" -> null
+      - id          = "session19-cloud-tf-dev-ec2-profile" -> null
+      - name        = "session19-cloud-tf-dev-ec2-profile" -> null
+      - path        = "/" -> null
+      - role        = "session19-cloud-tf-dev-ec2-role" -> null
+      - tags        = {} -> null
+      - tags_all    = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - unique_id   = "1kz2elqbimo1oejkpqa3" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_iam_role.ec2 will be destroyed
+  - resource "aws_iam_role" "ec2" {
+      - arn                   = "arn:aws:iam::000000000000:role/session19-cloud-tf-dev-ec2-role" -> null
+      - assume_role_policy    = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action    = "sts:AssumeRole"
+                      - Effect    = "Allow"
+                      - Principal = {
+                          - Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - create_date           = "2026-10-06T23:16:10Z" -> null
+      - force_detach_policies = false -> null
+      - id                    = "session19-cloud-tf-dev-ec2-role" -> null
+      - managed_policy_arns   = [] -> null
+      - max_session_duration  = 3600 -> null
+      - name                  = "session19-cloud-tf-dev-ec2-role" -> null
+      - path                  = "/" -> null
+      - tags                  = {} -> null
+      - tags_all              = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - unique_id             = "AROAQAAAAAAAOBCTPFUXX" -> null
+        # (3 unchanged attributes hidden)
+
+      - inline_policy {
+          - name   = "read-assets-bucket" -> null
+          - policy = jsonencode(
+                {
+                  - Statement = [
+                      - {
+                          - Action   = [
+                              - "s3:GetObject",
+                              - "s3:ListBucket",
+                            ]
+                          - Effect   = "Allow"
+                          - Resource = [
+                              - "arn:aws:s3:::parth-s19-assets-dev-a06fbc57",
+                              - "arn:aws:s3:::parth-s19-assets-dev-a06fbc57/*",
+                            ]
+                        },
+                    ]
+                  - Version   = "2012-10-17"
+                }
+            ) -> null
+        }
+    }
+
+  # aws_iam_role_policy.s3_read will be destroyed
+  - resource "aws_iam_role_policy" "s3_read" {
+      - id          = "session19-cloud-tf-dev-ec2-role:read-assets-bucket" -> null
+      - name        = "read-assets-bucket" -> null
+      - policy      = jsonencode(
+            {
+              - Statement = [
+                  - {
+                      - Action   = [
+                          - "s3:GetObject",
+                          - "s3:ListBucket",
+                        ]
+                      - Effect   = "Allow"
+                      - Resource = [
+                          - "arn:aws:s3:::parth-s19-assets-dev-a06fbc57",
+                          - "arn:aws:s3:::parth-s19-assets-dev-a06fbc57/*",
+                        ]
+                    },
+                ]
+              - Version   = "2012-10-17"
+            }
+        ) -> null
+      - role        = "session19-cloud-tf-dev-ec2-role" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_instance.web will be destroyed
+  - resource "aws_instance" "web" {
+      - ami                                  = "ami-1e749f67" -> null
+      - arn                                  = "arn:aws:ec2:ap-south-1::instance/i-01a3b942f708b1b1c" -> null
+      - associate_public_ip_address          = true -> null
+      - availability_zone                    = "ap-south-1a" -> null
+      - disable_api_stop                     = false -> null
+      - disable_api_termination              = false -> null
+      - ebs_optimized                        = false -> null
+      - force_destroy                        = false -> null
+      - get_password_data                    = false -> null
+      - hibernation                          = false -> null
+      - iam_instance_profile                 = "session19-cloud-tf-dev-ec2-profile" -> null
+      - id                                   = "i-01a3b942f708b1b1c" -> null
+      - instance_initiated_shutdown_behavior = "stop" -> null
+      - instance_state                       = "running" -> null
+      - instance_type                        = "t3.micro" -> null
+      - ipv6_address_count                   = 0 -> null
+      - ipv6_addresses                       = [] -> null
+      - monitoring                           = false -> null
+      - placement_partition_number           = 0 -> null
+      - primary_network_interface_id         = "eni-bfe0c2706a75a232d" -> null
+      - private_dns                          = "ip-10-0-1-4.ap-south-1.compute.internal" -> null
+      - private_ip                           = "10.0.1.4" -> null
+      - public_dns                           = "ec2-54-214-118-96.ap-south-1.compute.amazonaws.com" -> null
+      - public_ip                            = "54.214.118.96" -> null
+      - region                               = "ap-south-1" -> null
+      - secondary_private_ips                = [] -> null
+      - security_groups                      = [] -> null
+      - source_dest_check                    = true -> null
+      - subnet_id                            = "subnet-247acf240e16e7e91" -> null
+      - tags                                 = {
+          - "Name" = "session19-cloud-tf-dev-web"
+        } -> null
+      - tags_all                             = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-web"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - tenancy                              = "default" -> null
+      - user_data                            = <<-EOT
+            #!/bin/bash
+            apt-get update -y
+            apt-get install -y nginx awscli
+            aws s3 cp s3://parth-s19-assets-dev-a06fbc57/site/index.html /var/www/html/index.html
+            systemctl enable --now nginx
+        EOT -> null
+      - user_data_replace_on_change          = false -> null
+      - vpc_security_group_ids               = [
+          - "sg-9617f05a855df0bfb",
+        ] -> null
+        # (8 unchanged attributes hidden)
+
+      - credit_specification {
+          - cpu_credits = "standard" -> null
+        }
+
+      - metadata_options {
+          - http_endpoint               = "enabled" -> null
+          - http_protocol_ipv6          = "disabled" -> null
+          - http_put_response_hop_limit = 1 -> null
+          - http_tokens                 = "required" -> null
+          - instance_metadata_tags      = "disabled" -> null
+        }
+
+      - primary_network_interface {
+          - delete_on_termination = false -> null
+          - network_interface_id  = "eni-bfe0c2706a75a232d" -> null
+        }
+
+      - root_block_device {
+          - delete_on_termination = true -> null
+          - device_name           = "/dev/sda1" -> null
+          - encrypted             = true -> null
+          - iops                  = 3000 -> null
+          - kms_key_id            = "arn:aws:kms:ap-south-1:000000000000:key/c1624527-2033-4c5e-9f5a-ec37b04e0d28" -> null
+          - tags                  = {} -> null
+          - tags_all              = {
+              - "Env"       = "dev"
+              - "ManagedBy" = "Terraform"
+              - "Owner"     = "Parth Dagia"
+              - "Project"   = "session19-cloud-tf"
+            } -> null
+          - throughput            = 0 -> null
+          - volume_id             = "vol-754ec57df54c9f0ff" -> null
+          - volume_size           = 8 -> null
+          - volume_type           = "gp3" -> null
+        }
+    }
+
+  # aws_internet_gateway.main will be destroyed
+  - resource "aws_internet_gateway" "main" {
+      - arn      = "arn:aws:ec2:ap-south-1:000000000000:internet-gateway/igw-f3a8ee5b013cdc3f5" -> null
+      - id       = "igw-f3a8ee5b013cdc3f5" -> null
+      - owner_id = "000000000000" -> null
+      - region   = "ap-south-1" -> null
+      - tags     = {
+          - "Name" = "session19-cloud-tf-dev-igw"
+        } -> null
+      - tags_all = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-igw"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - vpc_id   = "vpc-5fa447bc340b3a57e" -> null
+    }
+
+  # aws_route_table.public will be destroyed
+  - resource "aws_route_table" "public" {
+      - arn              = "arn:aws:ec2:ap-south-1:000000000000:route-table/rtb-5f416dfe008c74ecd" -> null
+      - id               = "rtb-5f416dfe008c74ecd" -> null
+      - owner_id         = "000000000000" -> null
+      - propagating_vgws = [] -> null
+      - region           = "ap-south-1" -> null
+      - route            = [
+          - {
+              - cidr_block                 = "0.0.0.0/0"
+              - gateway_id                 = "igw-f3a8ee5b013cdc3f5"
+                # (12 unchanged attributes hidden)
+            },
+        ] -> null
+      - tags             = {
+          - "Name" = "session19-cloud-tf-dev-public-rt"
+        } -> null
+      - tags_all         = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-public-rt"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - vpc_id           = "vpc-5fa447bc340b3a57e" -> null
+    }
+
+  # aws_route_table_association.public will be destroyed
+  - resource "aws_route_table_association" "public" {
+      - id             = "rtbassoc-464c5a6eb58cf332b" -> null
+      - region         = "ap-south-1" -> null
+      - route_table_id = "rtb-5f416dfe008c74ecd" -> null
+      - subnet_id      = "subnet-247acf240e16e7e91" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_s3_bucket.assets will be destroyed
+  - resource "aws_s3_bucket" "assets" {
+      - arn                         = "arn:aws:s3:::parth-s19-assets-dev-a06fbc57" -> null
+      - bucket                      = "parth-s19-assets-dev-a06fbc57" -> null
+      - bucket_domain_name          = "parth-s19-assets-dev-a06fbc57.s3.amazonaws.com" -> null
+      - bucket_namespace            = "global" -> null
+      - bucket_region               = "ap-south-1" -> null
+      - bucket_regional_domain_name = "parth-s19-assets-dev-a06fbc57.s3.ap-south-1.amazonaws.com" -> null
+      - force_destroy               = true -> null
+      - hosted_zone_id              = "Z11RGJOFQNVJUP" -> null
+      - id                          = "parth-s19-assets-dev-a06fbc57" -> null
+      - object_lock_enabled         = false -> null
+      - region                      = "ap-south-1" -> null
+      - request_payer               = "BucketOwner" -> null
+      - tags                        = {
+          - "Name" = "session19-cloud-tf-dev-assets"
+        } -> null
+      - tags_all                    = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-assets"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+        # (3 unchanged attributes hidden)
+
+      - grant {
+          - id          = "75aa57f09aa0c8caeab4f8c24e99d10f8e7faeebf76c078efc7c6caea54ba06a" -> null
+          - permissions = [
+              - "FULL_CONTROL",
+            ] -> null
+          - type        = "CanonicalUser" -> null
+            # (1 unchanged attribute hidden)
+        }
+
+      - server_side_encryption_configuration {
+          - rule {
+              - bucket_key_enabled = false -> null
+
+              - apply_server_side_encryption_by_default {
+                  - sse_algorithm     = "AES256" -> null
+                    # (1 unchanged attribute hidden)
+                }
+            }
+        }
+
+      - versioning {
+          - enabled    = true -> null
+          - mfa_delete = false -> null
+        }
+    }
+
+  # aws_s3_bucket_public_access_block.assets will be destroyed
+  - resource "aws_s3_bucket_public_access_block" "assets" {
+      - block_public_acls       = true -> null
+      - block_public_policy     = true -> null
+      - bucket                  = "parth-s19-assets-dev-a06fbc57" -> null
+      - id                      = "parth-s19-assets-dev-a06fbc57" -> null
+      - ignore_public_acls      = true -> null
+      - region                  = "ap-south-1" -> null
+      - restrict_public_buckets = true -> null
+    }
+
+  # aws_s3_bucket_server_side_encryption_configuration.assets will be destroyed
+  - resource "aws_s3_bucket_server_side_encryption_configuration" "assets" {
+      - bucket                = "parth-s19-assets-dev-a06fbc57" -> null
+      - id                    = "parth-s19-assets-dev-a06fbc57" -> null
+      - region                = "ap-south-1" -> null
+        # (1 unchanged attribute hidden)
+
+      - rule {
+          - blocked_encryption_types = [] -> null
+          - bucket_key_enabled       = false -> null
+
+          - apply_server_side_encryption_by_default {
+              - sse_algorithm     = "AES256" -> null
+                # (1 unchanged attribute hidden)
+            }
+        }
+    }
+
+  # aws_s3_bucket_versioning.assets will be destroyed
+  - resource "aws_s3_bucket_versioning" "assets" {
+      - bucket                = "parth-s19-assets-dev-a06fbc57" -> null
+      - id                    = "parth-s19-assets-dev-a06fbc57" -> null
+      - region                = "ap-south-1" -> null
+        # (1 unchanged attribute hidden)
+
+      - versioning_configuration {
+          - mfa_delete = "Disabled" -> null
+          - status     = "Enabled" -> null
+        }
+    }
+
+  # aws_s3_object.index will be destroyed
+  - resource "aws_s3_object" "index" {
+      - arn                           = "arn:aws:s3:::parth-s19-assets-dev-a06fbc57/site/index.html" -> null
+      - bucket                        = "parth-s19-assets-dev-a06fbc57" -> null
+      - bucket_key_enabled            = false -> null
+      - content                       = <<-EOT
+            <h1>Session 19: Cloud &amp; Terraform in Action</h1>
+            <p>Served by EC2 in 10.0.1.0/24, page pulled from S3. Parth Dagia (24BCS10414)</p>
+        EOT -> null
+      - content_type                  = "text/html" -> null
+      - etag                          = "0530790255febfa675a39ed78067a96d" -> null
+      - force_destroy                 = false -> null
+      - id                            = "parth-s19-assets-dev-a06fbc57/site/index.html" -> null
+      - key                           = "site/index.html" -> null
+      - metadata                      = {} -> null
+      - region                        = "ap-south-1" -> null
+      - server_side_encryption        = "AES256" -> null
+      - storage_class                 = "STANDARD" -> null
+      - tags                          = {} -> null
+      - tags_all                      = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - version_id                    = "AaETfm70lNOMqM0IhZzfQDD.FHIWwIrN" -> null
+        # (13 unchanged attributes hidden)
+    }
+
+  # aws_security_group.web will be destroyed
+  - resource "aws_security_group" "web" {
+      - arn                    = "arn:aws:ec2:ap-south-1:000000000000:security-group/sg-9617f05a855df0bfb" -> null
+      - description            = "HTTP from anywhere, SSH only from my IP, all egress" -> null
+      - egress                 = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "All outbound"
+              - from_port        = 0
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "-1"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 0
+            },
+        ] -> null
+      - id                     = "sg-9617f05a855df0bfb" -> null
+      - ingress                = [
+          - {
+              - cidr_blocks      = [
+                  - "0.0.0.0/0",
+                ]
+              - description      = "HTTP"
+              - from_port        = 80
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 80
+            },
+          - {
+              - cidr_blocks      = [
+                  - "203.0.113.10/32",
+                ]
+              - description      = "SSH from admin IP"
+              - from_port        = 22
+              - ipv6_cidr_blocks = []
+              - prefix_list_ids  = []
+              - protocol         = "tcp"
+              - security_groups  = []
+              - self             = false
+              - to_port          = 22
+            },
+        ] -> null
+      - name                   = "session19-cloud-tf-dev-web-sg" -> null
+      - owner_id               = "000000000000" -> null
+      - region                 = "ap-south-1" -> null
+      - revoke_rules_on_delete = false -> null
+      - tags                   = {
+          - "Name" = "session19-cloud-tf-dev-web-sg"
+        } -> null
+      - tags_all               = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-web-sg"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - vpc_id                 = "vpc-5fa447bc340b3a57e" -> null
+        # (1 unchanged attribute hidden)
+    }
+
+  # aws_subnet.public will be destroyed
+  - resource "aws_subnet" "public" {
+      - arn                                            = "arn:aws:ec2:ap-south-1:000000000000:subnet/subnet-247acf240e16e7e91" -> null
+      - assign_ipv6_address_on_creation                = false -> null
+      - availability_zone                              = "ap-south-1a" -> null
+      - availability_zone_id                           = "aps1-az1" -> null
+      - cidr_block                                     = "10.0.1.0/24" -> null
+      - enable_dns64                                   = false -> null
+      - enable_lni_at_device_index                     = 0 -> null
+      - enable_resource_name_dns_a_record_on_launch    = false -> null
+      - enable_resource_name_dns_aaaa_record_on_launch = false -> null
+      - id                                             = "subnet-247acf240e16e7e91" -> null
+      - ipv6_native                                    = false -> null
+      - map_customer_owned_ip_on_launch                = false -> null
+      - map_public_ip_on_launch                        = true -> null
+      - owner_id                                       = "000000000000" -> null
+      - private_dns_hostname_type_on_launch            = "ip-name" -> null
+      - region                                         = "ap-south-1" -> null
+      - tags                                           = {
+          - "Name" = "session19-cloud-tf-dev-public-subnet"
+        } -> null
+      - tags_all                                       = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-public-subnet"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - vpc_id                                         = "vpc-5fa447bc340b3a57e" -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_vpc.main will be destroyed
+  - resource "aws_vpc" "main" {
+      - arn                                  = "arn:aws:ec2:ap-south-1:000000000000:vpc/vpc-5fa447bc340b3a57e" -> null
+      - assign_generated_ipv6_cidr_block     = false -> null
+      - cidr_block                           = "10.0.0.0/16" -> null
+      - default_network_acl_id               = "acl-554be1374cce028e0" -> null
+      - default_route_table_id               = "rtb-6ca7d42e64e086d4f" -> null
+      - default_security_group_id            = "sg-bdeae796487516033" -> null
+      - dhcp_options_id                      = "default" -> null
+      - enable_dns_hostnames                 = true -> null
+      - enable_dns_support                   = true -> null
+      - enable_network_address_usage_metrics = false -> null
+      - id                                   = "vpc-5fa447bc340b3a57e" -> null
+      - instance_tenancy                     = "default" -> null
+      - ipv6_netmask_length                  = 0 -> null
+      - main_route_table_id                  = "rtb-6ca7d42e64e086d4f" -> null
+      - owner_id                             = "000000000000" -> null
+      - region                               = "ap-south-1" -> null
+      - tags                                 = {
+          - "Name" = "session19-cloud-tf-dev-vpc"
+        } -> null
+      - tags_all                             = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Name"      = "session19-cloud-tf-dev-vpc"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+        # (4 unchanged attributes hidden)
+    }
+
+  # aws_vpc_security_group_egress_rule.all will be destroyed
+  - resource "aws_vpc_security_group_egress_rule" "all" {
+      - arn                    = "arn:aws:ec2:ap-south-1::security-group-rule/sgr-fb29386f7da312a69" -> null
+      - cidr_ipv4              = "0.0.0.0/0" -> null
+      - description            = "All outbound" -> null
+      - id                     = "sgr-fb29386f7da312a69" -> null
+      - ip_protocol            = "-1" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-9617f05a855df0bfb" -> null
+      - security_group_rule_id = "sgr-fb29386f7da312a69" -> null
+      - tags_all               = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+    }
+
+  # aws_vpc_security_group_ingress_rule.http will be destroyed
+  - resource "aws_vpc_security_group_ingress_rule" "http" {
+      - arn                    = "arn:aws:ec2:ap-south-1::security-group-rule/sgr-fbb7f73f20a7efd7f" -> null
+      - cidr_ipv4              = "0.0.0.0/0" -> null
+      - description            = "HTTP" -> null
+      - from_port              = 80 -> null
+      - id                     = "sgr-fbb7f73f20a7efd7f" -> null
+      - ip_protocol            = "tcp" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-9617f05a855df0bfb" -> null
+      - security_group_rule_id = "sgr-fbb7f73f20a7efd7f" -> null
+      - tags_all               = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - to_port                = 80 -> null
+    }
+
+  # aws_vpc_security_group_ingress_rule.ssh will be destroyed
+  - resource "aws_vpc_security_group_ingress_rule" "ssh" {
+      - arn                    = "arn:aws:ec2:ap-south-1::security-group-rule/sgr-1eb355e18859e55c4" -> null
+      - cidr_ipv4              = "203.0.113.10/32" -> null
+      - description            = "SSH from admin IP" -> null
+      - from_port              = 22 -> null
+      - id                     = "sgr-1eb355e18859e55c4" -> null
+      - ip_protocol            = "tcp" -> null
+      - region                 = "ap-south-1" -> null
+      - security_group_id      = "sg-9617f05a855df0bfb" -> null
+      - security_group_rule_id = "sgr-1eb355e18859e55c4" -> null
+      - tags_all               = {
+          - "Env"       = "dev"
+          - "ManagedBy" = "Terraform"
+          - "Owner"     = "Parth Dagia"
+          - "Project"   = "session19-cloud-tf"
+        } -> null
+      - to_port                = 22 -> null
+    }
+
+  # random_id.suffix will be destroyed
+  - resource "random_id" "suffix" {
+      - b64_std     = "oG+8Vw==" -> null
+      - b64_url     = "oG-8Vw" -> null
+      - byte_length = 4 -> null
+      - dec         = "2691677271" -> null
+      - hex         = "a06fbc57" -> null
+      - id          = "oG-8Vw" -> null
+    }
+
+Plan: 0 to add, 0 to change, 19 to destroy.
+
+Changes to Outputs:
+  - ami_id             = "ami-1e749f67" -> null
+  - availability_zone  = "ap-south-1a" -> null
+  - bucket_arn         = "arn:aws:s3:::parth-s19-assets-dev-a06fbc57" -> null
+  - bucket_name        = "parth-s19-assets-dev-a06fbc57" -> null
+  - instance_id        = "i-01a3b942f708b1b1c" -> null
+  - instance_public_ip = "54.214.118.96" -> null
+  - public_subnet_id   = "subnet-247acf240e16e7e91" -> null
+  - security_group_id  = "sg-9617f05a855df0bfb" -> null
+  - vpc_id             = "vpc-5fa447bc340b3a57e" -> null
+  - website_url        = "http://54.214.118.96" -> null
+aws_vpc_security_group_egress_rule.all: Destroying... [id=sgr-fb29386f7da312a69]
+aws_vpc_security_group_ingress_rule.ssh: Destroying... [id=sgr-1eb355e18859e55c4]
+aws_s3_bucket_public_access_block.assets: Destroying... [id=parth-s19-assets-dev-a06fbc57]
+aws_s3_bucket_server_side_encryption_configuration.assets: Destroying... [id=parth-s19-assets-dev-a06fbc57]
+aws_s3_bucket_versioning.assets: Destroying... [id=parth-s19-assets-dev-a06fbc57]
+aws_vpc_security_group_ingress_rule.http: Destroying... [id=sgr-fbb7f73f20a7efd7f]
+aws_instance.web: Destroying... [id=i-01a3b942f708b1b1c]
+aws_vpc_security_group_ingress_rule.http: Destruction complete after 0s
+aws_s3_bucket_versioning.assets: Destruction complete after 0s
+aws_s3_bucket_server_side_encryption_configuration.assets: Destruction complete after 0s
+aws_vpc_security_group_egress_rule.all: Destruction complete after 0s
+aws_vpc_security_group_ingress_rule.ssh: Destruction complete after 0s
+aws_s3_bucket_public_access_block.assets: Destruction complete after 0s
+aws_instance.web: Still destroying... [id=i-01a3b942f708b1b1c, 00m10s elapsed]
+aws_instance.web: Destruction complete after 10s
+aws_iam_role_policy.s3_read: Destroying... [id=session19-cloud-tf-dev-ec2-role:read-assets-bucket]
+aws_iam_instance_profile.ec2: Destroying... [id=session19-cloud-tf-dev-ec2-profile]
+aws_route_table_association.public: Destroying... [id=rtbassoc-464c5a6eb58cf332b]
+aws_s3_object.index: Destroying... [id=parth-s19-assets-dev-a06fbc57/site/index.html]
+aws_security_group.web: Destroying... [id=sg-9617f05a855df0bfb]
+aws_iam_role_policy.s3_read: Destruction complete after 0s
+aws_route_table_association.public: Destruction complete after 0s
+aws_iam_instance_profile.ec2: Destruction complete after 0s
+aws_s3_object.index: Destruction complete after 0s
+aws_subnet.public: Destroying... [id=subnet-247acf240e16e7e91]
+aws_route_table.public: Destroying... [id=rtb-5f416dfe008c74ecd]
+aws_security_group.web: Destruction complete after 0s
+aws_iam_role.ec2: Destroying... [id=session19-cloud-tf-dev-ec2-role]
+aws_s3_bucket.assets: Destroying... [id=parth-s19-assets-dev-a06fbc57]
+aws_subnet.public: Destruction complete after 0s
+aws_s3_bucket.assets: Destruction complete after 0s
+aws_iam_role.ec2: Destruction complete after 0s
+random_id.suffix: Destroying... [id=oG-8Vw]
+random_id.suffix: Destruction complete after 0s
+aws_route_table.public: Destruction complete after 0s
+aws_internet_gateway.main: Destroying... [id=igw-f3a8ee5b013cdc3f5]
+aws_internet_gateway.main: Destruction complete after 0s
+aws_vpc.main: Destroying... [id=vpc-5fa447bc340b3a57e]
+aws_vpc.main: Destruction complete after 0s
+
+Destroy complete! Resources: 19 destroyed.
+[exit code 0]

@@ -26,6 +26,7 @@ This is my homework for the DevOps course. Each topic has its own folder, and ev
 | 15 | Session 16: CI/CD and GitHub Actions | [15_CICD_GitHub_Actions/README.md](15_CICD_GitHub_Actions/README.md) (repo: <https://github.com/parthdagia05/session16-cicd-github-actions>) |
 | 16 | Session 17: Complete CI/CD and DevSecOps | [16_DevSecOps_Pipeline/README.md](16_DevSecOps_Pipeline/README.md) (workflow: [.github/workflows/session17-devsecops.yml](.github/workflows/session17-devsecops.yml)) |
 | 17 | Session 18: Terraform and Infrastructure as Code (+ AWS IAM, EC2, S3, VPC, DynamoDB/RDS notes) | [17_Terraform_IaC/README.md](17_Terraform_IaC/README.md) |
+| 18 | Session 19: Cloud & Terraform in Action (VPC, subnet, security group, EC2, S3) | [18_Cloud_Terraform_Project/README.md](18_Cloud_Terraform_Project/README.md) |
 
 ## My setup
 

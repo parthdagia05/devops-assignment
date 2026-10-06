@@ -1,0 +1,28 @@
+$ terraform plan -no-color -var instance_type=t3.small | sed -n '/Terraform will perform/,$p'
+Terraform will perform the following actions:
+
+  # aws_instance.web will be updated in-place
+  ~ resource "aws_instance" "web" {
+        id                                   = "i-01a3b942f708b1b1c"
+      ~ instance_type                        = "t3.micro" -> "t3.small"
+      ~ public_dns                           = "ec2-54-214-118-96.ap-south-1.compute.amazonaws.com" -> (known after apply)
+      ~ public_ip                            = "54.214.118.96" -> (known after apply)
+        tags                                 = {
+            "Name" = "session19-cloud-tf-dev-web"
+        }
+        # (38 unchanged attributes hidden)
+
+        # (4 unchanged blocks hidden)
+    }
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+Changes to Outputs:
+  ~ instance_public_ip = "54.214.118.96" -> (known after apply)
+  ~ website_url        = "http://54.214.118.96" -> (known after apply)
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
+[exit code 0]

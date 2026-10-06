@@ -1,0 +1,282 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1301pt" height="537pt" viewBox="0.00 0.00 1301.39 537.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 533)">
+<title>G</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-533 1297.39,-533 1297.39,4 -4,4"/>
+<!-- aws_iam_instance_profile.ec2 -->
+<g id="node1" class="node">
+<title>aws_iam_instance_profile.ec2</title>
+<path fill="#fdecee" stroke="#555555" d="M847.05,-205C847.05,-205 694.29,-205 694.29,-205 688.29,-205 682.29,-199 682.29,-193 682.29,-193 682.29,-181 682.29,-181 682.29,-175 688.29,-169 694.29,-169 694.29,-169 847.05,-169 847.05,-169 853.05,-169 859.05,-175 859.05,-181 859.05,-181 859.05,-193 859.05,-193 859.05,-199 853.05,-205 847.05,-205"/>
+<text text-anchor="middle" x="770.67" y="-183.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_iam_instance_profile.ec2</text>
+</g>
+<!-- aws_iam_role.ec2 -->
+<g id="node2" class="node">
+<title>aws_iam_role.ec2</title>
+<path fill="#fdecee" stroke="#555555" d="M523.22,-253C523.22,-253 434.51,-253 434.51,-253 428.51,-253 422.51,-247 422.51,-241 422.51,-241 422.51,-229 422.51,-229 422.51,-223 428.51,-217 434.51,-217 434.51,-217 523.22,-217 523.22,-217 529.22,-217 535.22,-223 535.22,-229 535.22,-229 535.22,-241 535.22,-241 535.22,-247 529.22,-253 523.22,-253"/>
+<text text-anchor="middle" x="478.86" y="-231.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_iam_role.ec2</text>
+</g>
+<!-- aws_iam_instance_profile.ec2&#45;&gt;aws_iam_role.ec2 -->
+<g id="edge1" class="edge">
+<title>aws_iam_instance_profile.ec2-&gt;aws_iam_role.ec2</title>
+<path fill="none" stroke="#666666" d="M682.04,-200.59C655.43,-204.79 626.13,-209.51 599.24,-214 581.24,-217.01 561.74,-220.39 543.81,-223.54"/>
+<polygon fill="#666666" stroke="#666666" points="543.66,-221.08 537.19,-224.71 544.51,-225.91 543.66,-221.08"/>
+</g>
+<!-- aws_iam_role_policy.s3_read -->
+<g id="node3" class="node">
+<title>aws_iam_role_policy.s3_read</title>
+<path fill="#fdecee" stroke="#555555" d="M845.71,-259C845.71,-259 695.62,-259 695.62,-259 689.62,-259 683.62,-253 683.62,-247 683.62,-247 683.62,-235 683.62,-235 683.62,-229 689.62,-223 695.62,-223 695.62,-223 845.71,-223 845.71,-223 851.71,-223 857.71,-229 857.71,-235 857.71,-235 857.71,-247 857.71,-247 857.71,-253 851.71,-259 845.71,-259"/>
+<text text-anchor="middle" x="770.67" y="-237.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_iam_role_policy.s3_read</text>
+</g>
+<!-- aws_iam_role_policy.s3_read&#45;&gt;aws_iam_role.ec2 -->
+<g id="edge2" class="edge">
+<title>aws_iam_role_policy.s3_read-&gt;aws_iam_role.ec2</title>
+<path fill="none" stroke="#666666" d="M683.5,-239.22C638.7,-238.29 584.89,-237.17 543.83,-236.32"/>
+<polygon fill="#666666" stroke="#666666" points="544.1,-233.88 537.05,-236.18 544,-238.78 544.1,-233.88"/>
+</g>
+<!-- aws_s3_bucket.assets -->
+<g id="node8" class="node">
+<title>aws_s3_bucket.assets</title>
+<path fill="#e6f2df" stroke="#555555" d="M535.23,-421C535.23,-421 422.5,-421 422.5,-421 416.5,-421 410.5,-415 410.5,-409 410.5,-409 410.5,-397 410.5,-397 410.5,-391 416.5,-385 422.5,-385 422.5,-385 535.23,-385 535.23,-385 541.23,-385 547.23,-391 547.23,-397 547.23,-397 547.23,-409 547.23,-409 547.23,-415 541.23,-421 535.23,-421"/>
+<text text-anchor="middle" x="478.86" y="-399.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_s3_bucket.assets</text>
+</g>
+<!-- aws_iam_role_policy.s3_read&#45;&gt;aws_s3_bucket.assets -->
+<g id="edge3" class="edge">
+<title>aws_iam_role_policy.s3_read-&gt;aws_s3_bucket.assets</title>
+<path fill="none" stroke="#666666" d="M683.15,-243.19C655.04,-246.83 624.58,-254.09 599.24,-268 552.01,-293.92 514.31,-346.05 494.68,-377.4"/>
+<polygon fill="#666666" stroke="#666666" points="492.68,-375.98 491.11,-383.23 496.86,-378.54 492.68,-375.98"/>
+</g>
+<!-- aws_instance.web -->
+<g id="node4" class="node">
+<title>aws_instance.web</title>
+<path fill="#fbe3cc" stroke="#555555" d="M1216.69,-242C1216.69,-242 1126.63,-242 1126.63,-242 1120.63,-242 1114.63,-236 1114.63,-230 1114.63,-230 1114.63,-218 1114.63,-218 1114.63,-212 1120.63,-206 1126.63,-206 1126.63,-206 1216.69,-206 1216.69,-206 1222.69,-206 1228.69,-212 1228.69,-218 1228.69,-218 1228.69,-230 1228.69,-230 1228.69,-236 1222.69,-242 1216.69,-242"/>
+<text text-anchor="middle" x="1171.66" y="-220.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_instance.web</text>
+</g>
+<!-- aws_instance.web&#45;&gt;aws_iam_instance_profile.ec2 -->
+<g id="edge4" class="edge">
+<title>aws_instance.web-&gt;aws_iam_instance_profile.ec2</title>
+<path fill="none" stroke="#666666" d="M1114.34,-218.78C1050.3,-212.84 944.65,-203.04 867.56,-195.89"/>
+<polygon fill="#666666" stroke="#666666" points="867.96,-193.47 860.76,-195.26 867.5,-198.35 867.96,-193.47"/>
+</g>
+<!-- aws_instance.web&#45;&gt;aws_iam_role_policy.s3_read -->
+<g id="edge5" class="edge">
+<title>aws_instance.web-&gt;aws_iam_role_policy.s3_read</title>
+<path fill="none" stroke="#b0306a" stroke-width="2" stroke-dasharray="5,2" d="M1114.34,-226.4C1050.38,-229.12 944.91,-233.62 867.85,-236.9"/>
+<polygon fill="#b0306a" stroke="#b0306a" stroke-width="2" points="868.04,-234.44 861.15,-237.19 868.25,-239.34 868.04,-234.44"/>
+<text text-anchor="middle" x="996.01" y="-235.5" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#b0306a"> depends_on</text>
+</g>
+<!-- aws_route_table_association.public -->
+<g id="node7" class="node">
+<title>aws_route_table_association.public</title>
+<path fill="#dcefff" stroke="#555555" d="M861.4,-151C861.4,-151 679.94,-151 679.94,-151 673.94,-151 667.94,-145 667.94,-139 667.94,-139 667.94,-127 667.94,-127 667.94,-121 673.94,-115 679.94,-115 679.94,-115 861.4,-115 861.4,-115 867.4,-115 873.4,-121 873.4,-127 873.4,-127 873.4,-139 873.4,-139 873.4,-145 867.4,-151 861.4,-151"/>
+<text text-anchor="middle" x="770.67" y="-129.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_route_table_association.public</text>
+</g>
+<!-- aws_instance.web&#45;&gt;aws_route_table_association.public -->
+<g id="edge6" class="edge">
+<title>aws_instance.web-&gt;aws_route_table_association.public</title>
+<path fill="none" stroke="#b0306a" stroke-width="2" stroke-dasharray="5,2" d="M1114.29,-206.25C1068.31,-192.24 1001.48,-172.97 942.1,-160 923.32,-155.9 903.25,-152.16 883.71,-148.85"/>
+<polygon fill="#b0306a" stroke="#b0306a" stroke-width="2" points="884.16,-146.44 876.85,-147.71 883.36,-151.28 884.16,-146.44"/>
+<text text-anchor="middle" x="996.01" y="-183.35" font-family="Helvetica,sans-Serif" font-size="10.00" fill="#b0306a"> depends_on</text>
+</g>
+<!-- aws_s3_object.index -->
+<g id="node12" class="node">
+<title>aws_s3_object.index</title>
+<path fill="#e6f2df" stroke="#555555" d="M822.37,-367C822.37,-367 718.97,-367 718.97,-367 712.97,-367 706.97,-361 706.97,-355 706.97,-355 706.97,-343 706.97,-343 706.97,-337 712.97,-331 718.97,-331 718.97,-331 822.37,-331 822.37,-331 828.37,-331 834.37,-337 834.37,-343 834.37,-343 834.37,-355 834.37,-355 834.37,-361 828.37,-367 822.37,-367"/>
+<text text-anchor="middle" x="770.67" y="-345.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_s3_object.index</text>
+</g>
+<!-- aws_instance.web&#45;&gt;aws_s3_object.index -->
+<g id="edge7" class="edge">
+<title>aws_instance.web-&gt;aws_s3_object.index</title>
+<path fill="none" stroke="#666666" d="M1135.26,-242.46C1091.18,-264.67 1013.03,-301.52 942.1,-322 910.13,-331.23 873.82,-337.53 842.95,-341.71"/>
+<polygon fill="#666666" stroke="#666666" points="842.93,-339.24 836.31,-342.59 843.57,-344.1 842.93,-339.24"/>
+</g>
+<!-- aws_security_group.web -->
+<g id="node13" class="node">
+<title>aws_security_group.web</title>
+<path fill="#dcefff" stroke="#555555" d="M832.7,-95C832.7,-95 708.63,-95 708.63,-95 702.63,-95 696.63,-89 696.63,-83 696.63,-83 696.63,-71 696.63,-71 696.63,-65 702.63,-59 708.63,-59 708.63,-59 832.7,-59 832.7,-59 838.7,-59 844.7,-65 844.7,-71 844.7,-71 844.7,-83 844.7,-83 844.7,-89 838.7,-95 832.7,-95"/>
+<text text-anchor="middle" x="770.67" y="-73.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_security_group.web</text>
+</g>
+<!-- aws_instance.web&#45;&gt;aws_security_group.web -->
+<g id="edge8" class="edge">
+<title>aws_instance.web-&gt;aws_security_group.web</title>
+<path fill="none" stroke="#666666" d="M1135.89,-205.69C1074.46,-173.4 952.21,-109.38 942.1,-106 913.86,-96.56 881.91,-90.08 853.37,-85.69"/>
+<polygon fill="#666666" stroke="#666666" points="853.81,-83.28 846.52,-84.67 853.09,-88.12 853.81,-83.28"/>
+</g>
+<!-- data.aws_ami.ubuntu -->
+<g id="node19" class="node">
+<title>data.aws_ami.ubuntu</title>
+<polygon fill="#ede4f7" stroke="#555555" points="829.71,-313 705.63,-313 705.63,-277 835.71,-277 835.71,-307 829.71,-313"/>
+<polyline fill="none" stroke="#555555" points="829.71,-313 829.71,-307"/>
+<polyline fill="none" stroke="#555555" points="835.71,-307 829.71,-307"/>
+<text text-anchor="middle" x="770.67" y="-291.4" font-family="Helvetica,sans-Serif" font-size="12.00">data.aws_ami.ubuntu</text>
+</g>
+<!-- aws_instance.web&#45;&gt;data.aws_ami.ubuntu -->
+<g id="edge9" class="edge">
+<title>aws_instance.web-&gt;data.aws_ami.ubuntu</title>
+<path fill="none" stroke="#666666" d="M1114.4,-235.37C1068.19,-244.58 1001,-257.67 942.1,-268 910.14,-273.61 874.71,-279.3 844.47,-284.01"/>
+<polygon fill="#666666" stroke="#666666" points="844.13,-281.58 837.59,-285.08 844.88,-286.42 844.13,-281.58"/>
+</g>
+<!-- aws_internet_gateway.main -->
+<g id="node5" class="node">
+<title>aws_internet_gateway.main</title>
+<path fill="#dcefff" stroke="#555555" d="M321.14,-141C321.14,-141 180.38,-141 180.38,-141 174.38,-141 168.38,-135 168.38,-129 168.38,-129 168.38,-117 168.38,-117 168.38,-111 174.38,-105 180.38,-105 180.38,-105 321.14,-105 321.14,-105 327.14,-105 333.14,-111 333.14,-117 333.14,-117 333.14,-129 333.14,-129 333.14,-135 327.14,-141 321.14,-141"/>
+<text text-anchor="middle" x="250.76" y="-119.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_internet_gateway.main</text>
+</g>
+<!-- aws_vpc.main -->
+<g id="node15" class="node">
+<title>aws_vpc.main</title>
+<path fill="#dcefff" stroke="#555555" d="M80.03,-141C80.03,-141 12,-141 12,-141 6,-141 0,-135 0,-129 0,-129 0,-117 0,-117 0,-111 6,-105 12,-105 12,-105 80.03,-105 80.03,-105 86.03,-105 92.03,-111 92.03,-117 92.03,-117 92.03,-129 92.03,-129 92.03,-135 86.03,-141 80.03,-141"/>
+<text text-anchor="middle" x="46.02" y="-119.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_vpc.main</text>
+</g>
+<!-- aws_internet_gateway.main&#45;&gt;aws_vpc.main -->
+<g id="edge10" class="edge">
+<title>aws_internet_gateway.main-&gt;aws_vpc.main</title>
+<path fill="none" stroke="#666666" d="M168.17,-123C145.45,-123 121.34,-123 100.66,-123"/>
+<polygon fill="#666666" stroke="#666666" points="100.84,-120.55 93.84,-123 100.84,-125.45 100.84,-120.55"/>
+</g>
+<!-- aws_route_table.public -->
+<g id="node6" class="node">
+<title>aws_route_table.public</title>
+<path fill="#dcefff" stroke="#555555" d="M536.24,-141C536.24,-141 421.49,-141 421.49,-141 415.49,-141 409.49,-135 409.49,-129 409.49,-129 409.49,-117 409.49,-117 409.49,-111 415.49,-105 421.49,-105 421.49,-105 536.24,-105 536.24,-105 542.24,-105 548.24,-111 548.24,-117 548.24,-117 548.24,-129 548.24,-129 548.24,-135 542.24,-141 536.24,-141"/>
+<text text-anchor="middle" x="478.86" y="-119.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_route_table.public</text>
+</g>
+<!-- aws_route_table.public&#45;&gt;aws_internet_gateway.main -->
+<g id="edge11" class="edge">
+<title>aws_route_table.public-&gt;aws_internet_gateway.main</title>
+<path fill="none" stroke="#666666" d="M409.1,-123C387.81,-123 364.03,-123 341.54,-123"/>
+<polygon fill="#666666" stroke="#666666" points="341.83,-120.55 334.83,-123 341.83,-125.45 341.83,-120.55"/>
+</g>
+<!-- aws_route_table_association.public&#45;&gt;aws_route_table.public -->
+<g id="edge12" class="edge">
+<title>aws_route_table_association.public-&gt;aws_route_table.public</title>
+<path fill="none" stroke="#666666" d="M667.49,-129.47C631.14,-128.22 590.84,-126.83 556.94,-125.66"/>
+<polygon fill="#666666" stroke="#666666" points="557.06,-123.21 549.98,-125.42 556.89,-128.11 557.06,-123.21"/>
+</g>
+<!-- aws_subnet.public -->
+<g id="node14" class="node">
+<title>aws_subnet.public</title>
+<path fill="#dcefff" stroke="#555555" d="M524.23,-195C524.23,-195 433.5,-195 433.5,-195 427.5,-195 421.5,-189 421.5,-183 421.5,-183 421.5,-171 421.5,-171 421.5,-165 427.5,-159 433.5,-159 433.5,-159 524.23,-159 524.23,-159 530.23,-159 536.23,-165 536.23,-171 536.23,-171 536.23,-183 536.23,-183 536.23,-189 530.23,-195 524.23,-195"/>
+<text text-anchor="middle" x="478.86" y="-173.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_subnet.public</text>
+</g>
+<!-- aws_route_table_association.public&#45;&gt;aws_subnet.public -->
+<g id="edge13" class="edge">
+<title>aws_route_table_association.public-&gt;aws_subnet.public</title>
+<path fill="none" stroke="#666666" d="M667.49,-148.51C626.59,-154.72 580.69,-161.69 544.53,-167.18"/>
+<polygon fill="#666666" stroke="#666666" points="544.55,-164.7 538,-168.17 545.29,-169.55 544.55,-164.7"/>
+</g>
+<!-- random_id.suffix -->
+<g id="node21" class="node">
+<title>random_id.suffix</title>
+<path fill="#ede4f7" stroke="#555555" d="M290.78,-421C290.78,-421 210.74,-421 210.74,-421 204.74,-421 198.74,-415 198.74,-409 198.74,-409 198.74,-397 198.74,-397 198.74,-391 204.74,-385 210.74,-385 210.74,-385 290.78,-385 290.78,-385 296.78,-385 302.78,-391 302.78,-397 302.78,-397 302.78,-409 302.78,-409 302.78,-415 296.78,-421 290.78,-421"/>
+<text text-anchor="middle" x="250.76" y="-399.4" font-family="Helvetica,sans-Serif" font-size="12.00">random_id.suffix</text>
+</g>
+<!-- aws_s3_bucket.assets&#45;&gt;random_id.suffix -->
+<g id="edge14" class="edge">
+<title>aws_s3_bucket.assets-&gt;random_id.suffix</title>
+<path fill="none" stroke="#666666" d="M410.03,-403C378.64,-403 341.68,-403 311.37,-403"/>
+<polygon fill="#666666" stroke="#666666" points="311.53,-400.55 304.53,-403 311.53,-405.45 311.53,-400.55"/>
+</g>
+<!-- aws_s3_bucket_public_access_block.assets -->
+<g id="node9" class="node">
+<title>aws_s3_bucket_public_access_block.assets</title>
+<path fill="#e6f2df" stroke="#555555" d="M885.4,-529C885.4,-529 655.93,-529 655.93,-529 649.93,-529 643.93,-523 643.93,-517 643.93,-517 643.93,-505 643.93,-505 643.93,-499 649.93,-493 655.93,-493 655.93,-493 885.4,-493 885.4,-493 891.4,-493 897.4,-499 897.4,-505 897.4,-505 897.4,-517 897.4,-517 897.4,-523 891.4,-529 885.4,-529"/>
+<text text-anchor="middle" x="770.67" y="-507.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_s3_bucket_public_access_block.assets</text>
+</g>
+<!-- aws_s3_bucket_public_access_block.assets&#45;&gt;aws_s3_bucket.assets -->
+<g id="edge15" class="edge">
+<title>aws_s3_bucket_public_access_block.assets-&gt;aws_s3_bucket.assets</title>
+<path fill="none" stroke="#666666" d="M643.71,-497.49C628.46,-493.98 613.31,-489.56 599.24,-484 564.69,-470.33 530.09,-445.3 507.11,-426.67"/>
+<polygon fill="#666666" stroke="#666666" points="508.78,-424.88 501.82,-422.32 505.67,-428.66 508.78,-424.88"/>
+</g>
+<!-- aws_s3_bucket_server_side_encryption_configuration.assets -->
+<g id="node10" class="node">
+<title>aws_s3_bucket_server_side_encryption_configuration.assets</title>
+<path fill="#e6f2df" stroke="#555555" d="M930.1,-475C930.1,-475 611.24,-475 611.24,-475 605.24,-475 599.24,-469 599.24,-463 599.24,-463 599.24,-451 599.24,-451 599.24,-445 605.24,-439 611.24,-439 611.24,-439 930.1,-439 930.1,-439 936.1,-439 942.1,-445 942.1,-451 942.1,-451 942.1,-463 942.1,-463 942.1,-469 936.1,-475 930.1,-475"/>
+<text text-anchor="middle" x="770.67" y="-453.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_s3_bucket_server_side_encryption_configuration.assets</text>
+</g>
+<!-- aws_s3_bucket_server_side_encryption_configuration.assets&#45;&gt;aws_s3_bucket.assets -->
+<g id="edge16" class="edge">
+<title>aws_s3_bucket_server_side_encryption_configuration.assets-&gt;aws_s3_bucket.assets</title>
+<path fill="none" stroke="#666666" d="M647.08,-438.57C630.96,-435.85 614.68,-432.97 599.24,-430 585.07,-427.28 570.01,-424.1 555.54,-420.9"/>
+<polygon fill="#666666" stroke="#666666" points="556.41,-418.58 549.04,-419.45 555.34,-423.37 556.41,-418.58"/>
+</g>
+<!-- aws_s3_bucket_versioning.assets -->
+<g id="node11" class="node">
+<title>aws_s3_bucket_versioning.assets</title>
+<path fill="#e6f2df" stroke="#555555" d="M857.72,-421C857.72,-421 683.62,-421 683.62,-421 677.62,-421 671.62,-415 671.62,-409 671.62,-409 671.62,-397 671.62,-397 671.62,-391 677.62,-385 683.62,-385 683.62,-385 857.72,-385 857.72,-385 863.72,-385 869.72,-391 869.72,-397 869.72,-397 869.72,-409 869.72,-409 869.72,-415 863.72,-421 857.72,-421"/>
+<text text-anchor="middle" x="770.67" y="-399.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_s3_bucket_versioning.assets</text>
+</g>
+<!-- aws_s3_bucket_versioning.assets&#45;&gt;aws_s3_bucket.assets -->
+<g id="edge17" class="edge">
+<title>aws_s3_bucket_versioning.assets-&gt;aws_s3_bucket.assets</title>
+<path fill="none" stroke="#666666" d="M671.15,-403C633.48,-403 591.12,-403 555.87,-403"/>
+<polygon fill="#666666" stroke="#666666" points="556.04,-400.55 549.04,-403 556.04,-405.45 556.04,-400.55"/>
+</g>
+<!-- aws_s3_object.index&#45;&gt;aws_s3_bucket.assets -->
+<g id="edge18" class="edge">
+<title>aws_s3_object.index-&gt;aws_s3_bucket.assets</title>
+<path fill="none" stroke="#666666" d="M706.77,-357.96C674.53,-362.81 634.69,-369.19 599.24,-376 585.07,-378.72 570.01,-381.9 555.54,-385.1"/>
+<polygon fill="#666666" stroke="#666666" points="555.34,-382.63 549.04,-386.55 556.41,-387.42 555.34,-382.63"/>
+</g>
+<!-- aws_security_group.web&#45;&gt;aws_vpc.main -->
+<g id="edge19" class="edge">
+<title>aws_security_group.web-&gt;aws_vpc.main</title>
+<path fill="none" stroke="#666666" d="M696.3,-73.47C578.75,-69.11 341.25,-65.59 143.03,-96 129.01,-98.15 114.13,-101.69 100.38,-105.51"/>
+<polygon fill="#666666" stroke="#666666" points="99.94,-103.09 93.88,-107.37 101.28,-107.8 99.94,-103.09"/>
+</g>
+<!-- aws_subnet.public&#45;&gt;aws_vpc.main -->
+<g id="edge20" class="edge">
+<title>aws_subnet.public-&gt;aws_vpc.main</title>
+<path fill="none" stroke="#666666" d="M421.15,-175.77C354.21,-173.54 239.76,-167.33 143.03,-150 129.07,-147.5 114.21,-143.83 100.46,-140"/>
+<polygon fill="#666666" stroke="#666666" points="101.36,-137.71 93.96,-138.15 100.02,-142.43 101.36,-137.71"/>
+</g>
+<!-- data.aws_availability_zones.available -->
+<g id="node20" class="node">
+<title>data.aws_availability_zones.available</title>
+<polygon fill="#ede4f7" stroke="#555555" points="352.49,-233 143.03,-233 143.03,-197 358.49,-197 358.49,-227 352.49,-233"/>
+<polyline fill="none" stroke="#555555" points="352.49,-233 352.49,-227"/>
+<polyline fill="none" stroke="#555555" points="358.49,-227 352.49,-227"/>
+<text text-anchor="middle" x="250.76" y="-211.4" font-family="Helvetica,sans-Serif" font-size="12.00">data.aws_availability_zones.available</text>
+</g>
+<!-- aws_subnet.public&#45;&gt;data.aws_availability_zones.available -->
+<g id="edge21" class="edge">
+<title>aws_subnet.public-&gt;data.aws_availability_zones.available</title>
+<path fill="none" stroke="#666666" d="M421.1,-186.54C404.58,-189.32 385.9,-192.46 367.14,-195.61"/>
+<polygon fill="#666666" stroke="#666666" points="366.8,-193.18 360.3,-196.76 367.61,-198.01 366.8,-193.18"/>
+</g>
+<!-- aws_vpc_security_group_egress_rule.all -->
+<g id="node16" class="node">
+<title>aws_vpc_security_group_egress_rule.all</title>
+<path fill="#dcefff" stroke="#555555" d="M1276.05,-90C1276.05,-90 1067.27,-90 1067.27,-90 1061.27,-90 1055.27,-84 1055.27,-78 1055.27,-78 1055.27,-66 1055.27,-66 1055.27,-60 1061.27,-54 1067.27,-54 1067.27,-54 1276.05,-54 1276.05,-54 1282.05,-54 1288.05,-60 1288.05,-66 1288.05,-66 1288.05,-78 1288.05,-78 1288.05,-84 1282.05,-90 1276.05,-90"/>
+<text text-anchor="middle" x="1171.66" y="-68.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_vpc_security_group_egress_rule.all</text>
+</g>
+<!-- aws_vpc_security_group_egress_rule.all&#45;&gt;aws_security_group.web -->
+<g id="edge22" class="edge">
+<title>aws_vpc_security_group_egress_rule.all-&gt;aws_security_group.web</title>
+<path fill="none" stroke="#666666" d="M1054.99,-73.45C990.39,-74.26 911.47,-75.25 853.34,-75.98"/>
+<polygon fill="#666666" stroke="#666666" points="853.41,-73.53 846.44,-76.06 853.47,-78.43 853.41,-73.53"/>
+</g>
+<!-- aws_vpc_security_group_ingress_rule.http -->
+<g id="node17" class="node">
+<title>aws_vpc_security_group_ingress_rule.http</title>
+<path fill="#dcefff" stroke="#555555" d="M1281.39,-36C1281.39,-36 1061.93,-36 1061.93,-36 1055.93,-36 1049.93,-30 1049.93,-24 1049.93,-24 1049.93,-12 1049.93,-12 1049.93,-6 1055.93,0 1061.93,0 1061.93,0 1281.39,0 1281.39,0 1287.39,0 1293.39,-6 1293.39,-12 1293.39,-12 1293.39,-24 1293.39,-24 1293.39,-30 1287.39,-36 1281.39,-36"/>
+<text text-anchor="middle" x="1171.66" y="-14.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_vpc_security_group_ingress_rule.http</text>
+</g>
+<!-- aws_vpc_security_group_ingress_rule.http&#45;&gt;aws_security_group.web -->
+<g id="edge23" class="edge">
+<title>aws_vpc_security_group_ingress_rule.http-&gt;aws_security_group.web</title>
+<path fill="none" stroke="#666666" d="M1049.6,-35.9C985.99,-45.31 909.74,-56.58 853.21,-64.94"/>
+<polygon fill="#666666" stroke="#666666" points="853.08,-62.49 846.51,-65.93 853.79,-67.33 853.08,-62.49"/>
+</g>
+<!-- aws_vpc_security_group_ingress_rule.ssh -->
+<g id="node18" class="node">
+<title>aws_vpc_security_group_ingress_rule.ssh</title>
+<path fill="#dcefff" stroke="#555555" d="M1280.72,-144C1280.72,-144 1062.6,-144 1062.6,-144 1056.6,-144 1050.6,-138 1050.6,-132 1050.6,-132 1050.6,-120 1050.6,-120 1050.6,-114 1056.6,-108 1062.6,-108 1062.6,-108 1280.72,-108 1280.72,-108 1286.72,-108 1292.72,-114 1292.72,-120 1292.72,-120 1292.72,-132 1292.72,-132 1292.72,-138 1286.72,-144 1280.72,-144"/>
+<text text-anchor="middle" x="1171.66" y="-122.4" font-family="Helvetica,sans-Serif" font-size="12.00">aws_vpc_security_group_ingress_rule.ssh</text>
+</g>
+<!-- aws_vpc_security_group_ingress_rule.ssh&#45;&gt;aws_security_group.web -->
+<g id="edge24" class="edge">
+<title>aws_vpc_security_group_ingress_rule.ssh-&gt;aws_security_group.web</title>
+<path fill="none" stroke="#666666" d="M1050.14,-111.2C986.4,-103.37 909.84,-93.97 853.14,-87"/>
+<polygon fill="#666666" stroke="#666666" points="853.67,-84.6 846.42,-86.18 853.07,-89.47 853.67,-84.6"/>
+</g>
+</g>
+</svg>
