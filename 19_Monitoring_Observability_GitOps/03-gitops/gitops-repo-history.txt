@@ -1,0 +1,34 @@
+commit 9cbe7fc  Parth Dagia  2026-10-07 05:33:26 +0530
+    docs: README matches the repo after the PDB removal
+
+ README.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+commit d848e39  Parth Dagia  2026-10-07 05:31:12 +0530
+    Revert "prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message"
+
+ podinfo/overlays/prod/kustomization.yaml | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+commit fadda8c  Parth Dagia  2026-10-07 05:31:01 +0530
+    prod: drop the PodDisruptionBudget
+
+ podinfo/overlays/prod/kustomization.yaml | 2 +-
+ podinfo/overlays/prod/pdb.yaml           | 7 -------
+ 2 files changed, 1 insertion(+), 8 deletions(-)
+commit f0e6175  Parth Dagia  2026-10-07 05:29:40 +0530
+    prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message
+
+ podinfo/overlays/prod/kustomization.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+commit 9d3e5a4  Parth Dagia  2026-10-07 05:27:57 +0530
+    Initial desired state: podinfo dev + prod, Argo CD apps
+
+ README.md                                | 12 ++++++++++++
+ apps/podinfo-dev.yaml                    | 20 ++++++++++++++++++++
+ apps/podinfo-prod.yaml                   | 20 ++++++++++++++++++++
+ podinfo/base/deployment.yaml             | 23 +++++++++++++++++++++++
+ podinfo/base/kustomization.yaml          |  3 +++
+ podinfo/base/service.yaml                |  8 ++++++++
+ podinfo/overlays/dev/kustomization.yaml  | 12 ++++++++++++
+ podinfo/overlays/prod/kustomization.yaml | 12 ++++++++++++
+ podinfo/overlays/prod/pdb.yaml           |  7 +++++++
+ 9 files changed, 117 insertions(+)

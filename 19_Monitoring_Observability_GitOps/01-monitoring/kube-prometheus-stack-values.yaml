@@ -1,0 +1,73 @@
+# kube-prometheus-stack: Prometheus + Alertmanager + Grafana + node-exporter + kube-state-metrics
+# helm upgrade --install monitoring prometheus-community/kube-prometheus-stack -n monitoring -f this-file
+
+# kind runs etcd / scheduler / controller-manager / kube-proxy metrics on 127.0.0.1,
+# so Prometheus can't scrape them. Turn those targets off instead of living with red "down" alerts.
+kubeEtcd:              { enabled: false }
+kubeScheduler:         { enabled: false }
+kubeControllerManager: { enabled: false }
+kubeProxy:             { enabled: false }
+defaultRules:
+  rules:
+    etcd: false
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeControllerManager: false
+    kubeProxy: false
+
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    scrapeInterval: 15s
+    evaluationInterval: 15s
+    # pick up ServiceMonitors / PodMonitors / PrometheusRules from every namespace, not only this release's
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    resources:
+      requests: { cpu: 100m, memory: 400Mi }
+
+alertmanager:
+  config:
+    route:
+      group_by: [alertname, namespace]
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+      receiver: "null"
+      routes:
+        - receiver: webhook-logger          # our demo alerts go to a webhook we can read the logs of
+          matchers: [ 'team = "demo"' ]
+        - receiver: "null"
+          matchers: [ 'alertname = "Watchdog"' ]
+    receivers:
+      - name: "null"
+      - name: webhook-logger
+        webhook_configs:
+          - url: http://alert-logger.demo.svc:8080/
+            send_resolved: true
+
+grafana:
+  adminPassword: admin123
+  grafana.ini:
+    auth.anonymous:        # read-only access so screenshots don't need a login
+      enabled: true
+      org_role: Viewer
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      uid: loki
+      url: http://loki.observability.svc:3100
+      jsonData:
+        derivedFields:     # a trace_id in a log line becomes a link to Jaeger
+          - name: TraceID
+            matcherRegex: '"trace_id":"(\w+)"'
+            datasourceUid: jaeger
+            url: '$${__value.raw}'
+    - name: Jaeger
+      type: jaeger
+      uid: jaeger
+      url: http://jaeger.observability.svc:16686
+  sidecar:
+    dashboards:
+      searchNamespace: ALL   # ConfigMaps labelled grafana_dashboard=1 anywhere become dashboards

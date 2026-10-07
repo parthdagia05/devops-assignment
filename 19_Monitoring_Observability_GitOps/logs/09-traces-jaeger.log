@@ -1,0 +1,36 @@
+$ curl -s localhost:16686/api/services; echo
+{"data":["jaeger","frontend","backend"],"total":3,"limit":0,"offset":0,"errors":null}
+
+$ curl -s localhost:16686/api/services/frontend/operations | python3 -c 'import json,sys; print(sorted(json.load(sys.stdin)["data"]))'
+['GET /', 'GET /delay/{wait:[0-9]+}', 'GET /healthz', 'GET /metrics', 'GET /readyz', 'GET /status/{code:[0-9]+}', 'HTTP POST', 'POST /echo', 'delayHandler', 'echoHandler', 'http.connect', 'http.dns', 'http.getconn', 'http.headers', 'http.receive', 'http.send', 'infoHandler', 'statusHandler']
+
+$ # 1. log -> trace: take the trace_id from a frontend log line ...
+
+$ kubectl logs -n demo deploy/frontend --tail=600 | grep 265f4290c6fdd27202e47d0528fda90b
+Found 2 pods, using pod/frontend-77d9f49868-hzsrw
+{"level":"debug","ts":"2026-10-06T23:53:24.465Z","caller":"http/logging.go:35","msg":"request started","proto":"HTTP/1.1","uri":"/echo","method":"POST","remote":"10.244.1.143:36346","user-agent":"curl/8.16.0","trace_id":"265f4290c6fdd27202e47d0528fda90b"}
+
+$ # ... and open that trace: one request crossing both services
+
+$ trace 265f4290c6fdd27202e47d0528fda90b
+   trace 265f4290c6fdd27202e47d0528fda90b: 9 spans, services: ['backend', 'frontend']
+   frontend  POST /echo     +   0.00ms     52.40ms  200
+     frontend  echoHandler    +   0.04ms     52.36ms  
+       frontend  HTTP POST      +   0.13ms     52.21ms  202
+         backend   POST /echo     +   0.48ms     51.70ms  202
+           backend   echoHandler    +  52.07ms      0.07ms  
+       frontend  http.getconn   +   0.18ms      0.02ms  
+       frontend  http.headers   +   0.25ms      0.04ms  
+       frontend  http.send      +   0.28ms      0.05ms  
+       frontend  http.receive   +  52.27ms      0.07ms  
+
+$ # 2. the trace of a request made while backend was scaled to 0 (HTTP 200 to the client, but the backend call failed)
+
+$ trace 5bd1242eef3ee20db540375b335be6c2
+   trace 5bd1242eef3ee20db540375b335be6c2: 5 spans, services: ['frontend']
+   frontend  POST /echo     +   0.00ms      2.07ms  200
+     frontend  echoHandler    +   0.14ms      1.90ms  
+       frontend  HTTP POST      +   0.28ms      1.61ms    ERROR
+   frontend  http.dns       +   0.43ms      1.26ms  
+   frontend  http.connect   +   1.72ms      0.14ms    ERROR
+

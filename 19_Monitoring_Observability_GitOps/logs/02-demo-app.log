@@ -1,0 +1,49 @@
+$ kubectl get deploy,pods,svc -n demo
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/alert-logger   1/1     1            1           3m30s
+deployment.apps/backend        2/2     2            2           3m30s
+deployment.apps/frontend       2/2     2            2           3m30s
+deployment.apps/loadgen        1/1     1            1           3m30s
+
+NAME                                READY   STATUS    RESTARTS   AGE
+pod/alert-logger-7f9c8c9f4c-knfk7   1/1     Running   0          3m30s
+pod/backend-795f465789-f2lrd        1/1     Running   0          56s
+pod/backend-795f465789-w584p        1/1     Running   0          58s
+pod/frontend-77d9f49868-hzsrw       1/1     Running   0          58s
+pod/frontend-77d9f49868-rldzx       1/1     Running   0          57s
+pod/loadgen-55fc695dd8-qsn4g        1/1     Running   0          3m30s
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/alert-logger   ClusterIP   10.96.254.243   <none>        8080/TCP   3m30s
+service/backend        ClusterIP   10.96.236.92    <none>        9898/TCP   3m30s
+service/frontend       ClusterIP   10.96.112.165   <none>        9898/TCP   3m30s
+
+$ kubectl get servicemonitor,prometheusrule -n demo
+NAME                                           AGE
+servicemonitor.monitoring.coreos.com/podinfo   3m30s
+
+NAME                                                  AGE
+prometheusrule.monitoring.coreos.com/podinfo-alerts   3m30s
+
+$ curl -s -w ' -> HTTP %{http_code}' localhost:9898/healthz; echo
+{
+  "status": "OK"
+} -> HTTP 200
+
+$ curl -s -w ' -> HTTP %{http_code}' localhost:9898/readyz; echo
+{
+  "status": "OK"
+} -> HTTP 200
+
+$ curl -s -X POST -d 'hello session 20' localhost:9898/echo; echo
+[
+  "hello session 20"
+]
+
+$ curl -s localhost:9898/metrics | grep -E '^(http_requests_total|process_resident_memory_bytes|go_goroutines|process_cpu_seconds_total)'
+go_goroutines 25
+http_requests_total{status="200"} 108
+http_requests_total{status="500"} 4
+process_cpu_seconds_total 0.19
+process_resident_memory_bytes 4.3569152e+07
+

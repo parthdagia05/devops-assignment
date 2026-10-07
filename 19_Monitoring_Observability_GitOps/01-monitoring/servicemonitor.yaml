@@ -1,0 +1,13 @@
+# Tells Prometheus to scrape /metrics on every Service labelled app.kubernetes.io/part-of=podinfo.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: podinfo
+  namespace: demo
+spec:
+  selector:
+    matchLabels: { app.kubernetes.io/part-of: podinfo }
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s

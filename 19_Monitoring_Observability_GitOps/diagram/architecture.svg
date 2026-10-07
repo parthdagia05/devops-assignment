@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="800" viewBox="0 0 1500 800" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#444"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2410c"/></marker>
+    <style>
+      .box{stroke-width:1.6;rx:10}
+      .t{font-size:15px;font-weight:bold;fill:#1f2937}
+      .s{font-size:12px;fill:#4b5563}
+      .l{font-size:12px;fill:#374151}
+      .h{font-size:20px;font-weight:bold;fill:#111827}
+      .ln{stroke:#444;stroke-width:1.6;fill:none;marker-end:url(#a)}
+      .lg{stroke:#c2410c;stroke-width:1.8;fill:none;marker-end:url(#g)}
+    </style>
+  </defs>
+  <rect width="1500" height="800" fill="#ffffff"/>
+
+  <!-- ============ LEFT: monitoring + observability ============ -->
+  <rect x="15" y="15" width="850" height="770" rx="14" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="35" y="48" class="h">Monitoring &amp; Observability  (kind cluster: devops-lab)</text>
+
+  <!-- demo app -->
+  <rect x="40" y="80" width="260" height="250" class="box" fill="#eef2ff" stroke="#6366f1"/>
+  <text x="55" y="105" class="t">namespace: demo</text>
+  <rect x="60" y="120" width="220" height="44" rx="8" fill="#fff" stroke="#6366f1"/><text x="72" y="140" class="t">loadgen</text><text x="72" y="157" class="s">curl loop, ~4 req/s</text>
+  <rect x="60" y="185" width="220" height="44" rx="8" fill="#fff" stroke="#6366f1"/><text x="72" y="205" class="t">frontend (podinfo x2)</text><text x="72" y="222" class="s">/metrics /healthz /readyz</text>
+  <rect x="60" y="250" width="220" height="44" rx="8" fill="#fff" stroke="#6366f1"/><text x="72" y="270" class="t">backend (podinfo x2)</text><text x="72" y="287" class="s">random 0-300 ms delay</text>
+  <path d="M170,164 L170,183" class="ln"/><path d="M170,229 L170,248" class="ln"/>
+  <text x="178" y="243" class="s">POST /echo</text>
+  <text x="55" y="318" class="s">JSON logs (stdout) + OTLP traces</text>
+
+  <!-- metrics pipeline -->
+  <rect x="400" y="80" width="200" height="70" class="box" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="415" y="106" class="t">Prometheus</text><text x="415" y="124" class="s">scrape every 15s, rules,</text><text x="415" y="140" class="s">recording rules, 2d TSDB</text>
+  <rect x="400" y="170" width="200" height="56" class="box" fill="#fff7ed" stroke="#ea580c"/>
+  <text x="415" y="194" class="t">node-exporter</text><text x="415" y="212" class="s">+ kube-state-metrics, kubelet</text>
+  <rect x="660" y="80" width="185" height="70" class="box" fill="#fef2f2" stroke="#dc2626"/>
+  <text x="675" y="106" class="t">Alertmanager</text><text x="675" y="124" class="s">group, route on</text><text x="675" y="140" class="s">team="demo"</text>
+  <rect x="660" y="175" width="185" height="56" class="box" fill="#fef2f2" stroke="#dc2626"/>
+  <text x="675" y="199" class="t">alert-logger</text><text x="675" y="217" class="s">webhook receiver</text>
+  <path d="M300,200 L398,118" class="ln"/><text x="308" y="98" class="l">/metrics</text><text x="308" y="113" class="s">ServiceMonitor</text>
+  <path d="M500,170 L500,152" class="ln"/>
+  <path d="M600,115 L658,115" class="ln"/><text x="606" y="106" class="s">alerts</text>
+  <path d="M752,150 L752,173" class="ln"/><text x="760" y="166" class="s">POST</text>
+
+  <!-- logs pipeline -->
+  <rect x="400" y="290" width="200" height="56" class="box" fill="#ecfdf5" stroke="#059669"/>
+  <text x="415" y="314" class="t">Grafana Alloy</text><text x="415" y="332" class="s">DaemonSet, tails /var/log/pods</text>
+  <rect x="660" y="290" width="185" height="56" class="box" fill="#ecfdf5" stroke="#059669"/>
+  <text x="675" y="314" class="t">Loki</text><text x="675" y="332" class="s">label index + chunks</text>
+  <path d="M300,300 L398,315" class="ln"/><text x="318" y="292" class="l">logs</text>
+  <path d="M600,318 L658,318" class="ln"/><text x="607" y="310" class="s">push</text>
+
+  <!-- traces pipeline -->
+  <rect x="660" y="390" width="185" height="56" class="box" fill="#f0f9ff" stroke="#0284c7"/>
+  <text x="675" y="414" class="t">Jaeger v2</text><text x="675" y="432" class="s">OTLP :4317, in-memory</text>
+  <path d="M300,320 C420,400 560,420 658,418" class="ln"/><text x="420" y="402" class="l">traces (OTLP gRPC)</text>
+
+  <!-- grafana -->
+  <rect x="330" y="520" width="515" height="120" class="box" fill="#fffbeb" stroke="#d97706"/>
+  <text x="350" y="548" class="t">Grafana</text>
+  <text x="350" y="570" class="s">datasources: Prometheus, Loki, Jaeger, Alertmanager</text>
+  <text x="350" y="590" class="s">"Demo App - Monitoring" dashboard (ConfigMap) + 16 built-in Kubernetes dashboards</text>
+  <text x="350" y="610" class="s">Explore: LogQL, trace view; trace_id in a log line links to the Jaeger trace</text>
+  <path d="M400,140 L365,140 L365,500 L420,518" class="ln" stroke-dasharray="5 4"/>
+  <path d="M670,346 L640,372 L640,518" class="ln" stroke-dasharray="5 4"/>
+  <path d="M790,446 L790,518" class="ln" stroke-dasharray="5 4"/>
+  <text x="648" y="490" class="s">query</text>
+
+  <rect x="40" y="680" width="805" height="85" rx="10" fill="#fff" stroke="#cbd5e1"/>
+  <text x="58" y="705" class="t">Three pillars</text>
+  <text x="58" y="727" class="l">Metrics: numbers over time (CPU, memory, req/s, errors, latency) → dashboards + alerts</text>
+  <text x="58" y="745" class="l">Logs: what happened, event by event  ·  Traces: where the time went in one request across services</text>
+
+  <!-- ============ RIGHT: GitOps ============ -->
+  <rect x="880" y="15" width="605" height="770" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="900" y="48" class="h">GitOps  (pull model, Argo CD)</text>
+
+  <rect x="905" y="80" width="170" height="60" class="box" fill="#fff" stroke="#6b7280"/>
+  <text x="920" y="106" class="t">Developer</text><text x="920" y="124" class="s">edit YAML, git commit</text>
+
+  <rect x="1150" y="70" width="310" height="140" class="box" fill="#fff" stroke="#16a34a"/>
+  <text x="1165" y="95" class="t">Git repo (Gitea): gitops-demo</text>
+  <text x="1165" y="115" class="s">source of truth, declarative YAML</text>
+  <text x="1165" y="137" class="l">apps/             podinfo-dev, podinfo-prod</text>
+  <text x="1165" y="155" class="l">podinfo/base/      Deployment, Service</text>
+  <text x="1165" y="173" class="l">podinfo/overlays/  dev, prod (Kustomize)</text>
+  <text x="1165" y="195" class="s">history = audit log, git revert = rollback</text>
+  <path d="M1075,110 L1148,110" class="ln"/><text x="1083" y="101" class="l">git push</text>
+
+  <rect x="1060" y="290" width="400" height="150" class="box" fill="#fff" stroke="#ea580c"/>
+  <text x="1075" y="315" class="t">Argo CD (namespace argocd)</text>
+  <text x="1075" y="337" class="l">repo-server: renders Kustomize = DESIRED state</text>
+  <text x="1075" y="357" class="l">application-controller: reads LIVE state, diffs</text>
+  <text x="1075" y="377" class="l">automated sync: prune + selfHeal</text>
+  <text x="1075" y="397" class="l">root app → apps/ → podinfo-dev, podinfo-prod</text>
+  <text x="1075" y="420" class="s">polls every 60s; webhook makes it ~1s</text>
+  <path d="M1305,210 L1305,288" class="ln"/><text x="1313" y="245" class="l">pull (git fetch)</text>
+  <path d="M1200,212 L1200,288" class="lg"/><text x="1060" y="245" class="l" fill="#c2410c">webhook on push</text>
+
+  <rect x="905" y="520" width="250" height="110" class="box" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="920" y="545" class="t">namespace gitops-dev</text><text x="920" y="567" class="s">podinfo x1, ConfigMap, Service</text>
+  <rect x="1210" y="520" width="250" height="110" class="box" fill="#f0fdf4" stroke="#16a34a"/>
+  <text x="1225" y="545" class="t">namespace gitops-prod</text><text x="1225" y="567" class="s">podinfo x2-3, ConfigMap, Service</text>
+  <path d="M1150,440 L1040,518" class="ln"/><path d="M1340,440 L1340,518" class="ln"/>
+  <text x="1350" y="490" class="l">apply / prune</text>
+  <path d="M1460,600 C1495,520 1495,420 1462,380" class="lg"/><text x="1250" y="660" class="l" fill="#c2410c">drift detected → self-heal (back to Git state)</text>
+
+  <rect x="905" y="680" width="555" height="85" rx="10" fill="#fff" stroke="#fdba74"/>
+  <text x="922" y="705" class="t">Continuous reconciliation loop</text>
+  <text x="922" y="727" class="l">observe live state → compare with Git → act (sync) → repeat</text>
+  <text x="922" y="745" class="l">Nobody runs kubectl apply against prod; the cluster pulls its state from Git.</text>
+</svg>

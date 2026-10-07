@@ -1,0 +1,68 @@
+$ # 4. prune: remove the PodDisruptionBudget from Git -> Argo CD deletes it from the cluster
+
+$ kubectl get pdb -n gitops-prod
+NAME      MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+podinfo   1               N/A               2                     2m53s
+
+$ git rm -q podinfo/overlays/prod/pdb.yaml && sed -i '' 's/resources: \[..\/..\/base, pdb.yaml\]/resources: [..\/..\/base]/' podinfo/overlays/prod/kustomization.yaml && git diff --cached --stat; git diff podinfo/overlays/prod/kustomization.yaml
+ podinfo/overlays/prod/pdb.yaml | 7 -------
+ 1 file changed, 7 deletions(-)
+diff --git a/podinfo/overlays/prod/kustomization.yaml b/podinfo/overlays/prod/kustomization.yaml
+index 90baa73..6f82a67 100644
+--- a/podinfo/overlays/prod/kustomization.yaml
++++ b/podinfo/overlays/prod/kustomization.yaml
+@@ -1,6 +1,6 @@
+ apiVersion: kustomize.config.k8s.io/v1beta1
+ kind: Kustomization
+-resources: [../../base, pdb.yaml]
++resources: [../../base]
+ labels:
+   - pairs: { env: prod }
+ images:
+
+$ git commit -qam 'prod: drop the PodDisruptionBudget' && git push 2>&1 | grep -E 'main'
+   f0e6175..fadda8c  main -> main
+
+$ kubectl get pdb -n gitops-prod
+No resources found in gitops-prod namespace.
+
+$ kubectl logs -n argocd argocd-application-controller-0 | grep -i 'pruned' | grep -i poddisruption | tail -1 | cut -c1-230
+time="2026-10-07T00:01:05Z" level=info msg="Adding resource result, status: 'Pruned', phase: 'Succeeded', message: 'pruned'" app-namespace=argocd application=podinfo-prod kind=PodDisruptionBudget name=podinfo namespace=gitops-prod
+
+$ # 5. rollback = git revert. The v2 commit (3 replicas, 6.9.2) turned out bad, so undo it in Git
+
+$ git log --oneline
+fadda8c prod: drop the PodDisruptionBudget
+f0e6175 prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message
+9d3e5a4 Initial desired state: podinfo dev + prod, Argo CD apps
+
+$ git revert --no-edit f0e6175 >/dev/null && git log --oneline -1 && git show --stat HEAD | tail -2
+d848e39 Revert "prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message"
+ podinfo/overlays/prod/kustomization.yaml | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+$ git push 2>&1 | grep -E 'main'
+   fadda8c..d848e39  main -> main
+
+$ kubectl get deploy podinfo -n gitops-prod -o wide
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES                               SELECTOR
+podinfo   2/2     2            2           3m40s   podinfo      ghcr.io/stefanprodan/podinfo:6.9.1   app=podinfo
+
+$ kubectl exec -n demo deploy/loadgen -- curl -s http://podinfo.gitops-prod.svc:9898/ | grep -E '"(version|message)"'
+  "version": "6.9.1",
+  "message": "hello from PROD (deployed by Argo CD)",
+
+$ argocd app history podinfo-prod
+SOURCE  http://gitea.gitea.svc:3000/parth/gitops-demo.git
+ID      DATE                           REVISION
+0       2026-10-06 23:58:08 +0000 UTC  main (9d3e5a4)
+1       2026-10-06 23:59:44 +0000 UTC  main (f0e6175)
+2       2026-10-07 00:01:05 +0000 UTC  main (fadda8c)
+3       2026-10-07 00:01:16 +0000 UTC  main (d848e39)
+
+$ git log --oneline   # the Git log IS the deployment audit trail
+d848e39 Revert "prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message"
+fadda8c prod: drop the PodDisruptionBudget
+f0e6175 prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message
+9d3e5a4 Initial desired state: podinfo dev + prod, Argo CD apps
+

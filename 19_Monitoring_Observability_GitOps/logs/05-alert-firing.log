@@ -1,0 +1,77 @@
+$ kubectl patch deploy backend -n demo --type=json -p '[{"op":"add","path":"/spec/template/spec/containers/0/command/-","value":"--stress-cpu=1"},{"op":"add","path":"/spec/template/spec/containers/0/command/-","value":"--stress-memory=95"}]'
+deployment.apps/backend patched
+
+$ kubectl rollout status deploy/backend -n demo
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+deployment "backend" successfully rolled out
+
+$ # ~40s later: rules are true but have not lasted `for: 1m` yet
+
+$ kubectl top pods -n demo -l app=backend
+NAME                       CPU(cores)   MEMORY(bytes)   
+backend-6b4ff5f57f-49cg9   200m         107Mi           
+backend-6b4ff5f57f-mvzd5   200m         107Mi           
+
+$ alert_rules
+   ALERT                    STATE     FOR   ACTIVE
+   PodinfoHighErrorRate     inactive  60s   
+   PodinfoHighLatencyP95    inactive  120s  
+   PodinfoDown              inactive  30s   
+   PodinfoPodNotReady       inactive  30s   
+   PodinfoHighCPU           pending   60s   backend-6b4ff5f57f-mvzd5
+   PodinfoHighMemory        pending   60s   backend-6b4ff5f57f-mvzd5, backend-6b4ff5f57f-49cg9
+
+$ # ~100s later: the rules have held for 1m, so they fire and go to Alertmanager
+
+$ kubectl top pods -n demo -l app=backend
+NAME                       CPU(cores)   MEMORY(bytes)   
+backend-6b4ff5f57f-49cg9   200m         108Mi           
+backend-6b4ff5f57f-mvzd5   200m         109Mi           
+
+$ pq 'sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="demo",container="podinfo"}[1m])) / sum by (pod) (kube_pod_container_resource_limits{namespace="demo",container="podinfo",resource="cpu"})'
+   pod=frontend-77d9f49868-hzsrw => 0.007931642617694206
+   pod=frontend-77d9f49868-rldzx => 0.006688389482163877
+   pod=backend-6b4ff5f57f-mvzd5 => 0.9983504038319446
+   pod=backend-6b4ff5f57f-49cg9 => 0.9998323311187621
+
+$ pq 'sum by (pod) (container_memory_working_set_bytes{namespace="demo",container="podinfo"}) / sum by (pod) (kube_pod_container_resource_limits{namespace="demo",container="podinfo",resource="memory"})'
+   pod=frontend-77d9f49868-hzsrw => 0.203369140625
+   pod=frontend-77d9f49868-rldzx => 0.187408447265625
+   pod=backend-6b4ff5f57f-mvzd5 => 0.864227294921875
+   pod=backend-6b4ff5f57f-49cg9 => 0.8502197265625
+
+$ alert_rules
+   ALERT                    STATE     FOR   ACTIVE
+   PodinfoHighErrorRate     inactive  60s   
+   PodinfoHighLatencyP95    inactive  120s  
+   PodinfoDown              inactive  30s   
+   PodinfoPodNotReady       inactive  30s   
+   PodinfoHighCPU           firing    60s   backend-6b4ff5f57f-mvzd5, backend-6b4ff5f57f-49cg9
+   PodinfoHighMemory        firing    60s   backend-6b4ff5f57f-mvzd5, backend-6b4ff5f57f-49cg9
+
+$ am_alerts
+   3 alert(s) in Alertmanager
+   PodinfoHighMemory    warning   active   receivers=['webhook-logger']  backend-6b4ff5f57f-mvzd5 memory at 85.31% of its limit
+   PodinfoHighMemory    warning   active   receivers=['webhook-logger']  backend-6b4ff5f57f-49cg9 memory at 84.12% of its limit
+   PodinfoHighCPU       warning   active   receivers=['webhook-logger']  backend-6b4ff5f57f-mvzd5 CPU at 86.43% of its limit
+
+$ # Alertmanager routed the team=demo alerts to the webhook-logger receiver; its pod logs every request body
+
+$ kubectl logs -n demo deploy/alert-logger | grep -c 'Alertmanager/'
+10
+
+$ webhooks   # parse the JSON bodies out of the alert-logger log
+   POST from Alertmanager  status=firing   PodinfoHighMemory  backend-6b4ff5f57f-mvzd5   startsAt=23:38:53 endsAt=-  "backend-6b4ff5f57f-mvzd5 memory at 85.31% of its limit"
+   POST from Alertmanager  status=firing   PodinfoHighCPU     backend-6b4ff5f57f-mvzd5   startsAt=23:39:23 endsAt=-  "backend-6b4ff5f57f-mvzd5 CPU at 86.43% of its limit"
+   POST from Alertmanager  status=firing   PodinfoHighMemory  backend-6b4ff5f57f-49cg9   startsAt=23:39:08 endsAt=-  "backend-6b4ff5f57f-49cg9 memory at 84.12% of its limit"
+   POST from Alertmanager  status=firing   PodinfoHighMemory  backend-6b4ff5f57f-mvzd5   startsAt=23:38:53 endsAt=-  "backend-6b4ff5f57f-mvzd5 memory at 85.31% of its limit"
+   POST from Alertmanager  status=firing   PodinfoHighCPU     backend-6b4ff5f57f-49cg9   startsAt=23:39:38 endsAt=-  "backend-6b4ff5f57f-49cg9 CPU at 87.13% of its limit"
+   POST from Alertmanager  status=firing   PodinfoHighCPU     backend-6b4ff5f57f-mvzd5   startsAt=23:39:23 endsAt=-  "backend-6b4ff5f57f-mvzd5 CPU at 86.43% of its limit"
+   POST from Alertmanager  status=resolved PodinfoHighCPU     backend-6b4ff5f57f-49cg9   startsAt=23:39:38 endsAt=23:42:08  "backend-6b4ff5f57f-49cg9 CPU at 100% of its limit"
+   POST from Alertmanager  status=firing   PodinfoHighCPU     backend-6b4ff5f57f-mvzd5   startsAt=23:39:23 endsAt=-  "backend-6b4ff5f57f-mvzd5 CPU at 99.97% of its limit"
+

@@ -1,0 +1,33 @@
+$ # Loki label index: what can we filter on?
+
+$ curl -s localhost:3100/loki/api/v1/labels; echo
+{"status":"success","data":["app","container","filename","namespace","pod","service_name","stream"]}
+
+
+$ curl -s localhost:3100/loki/api/v1/label/app/values; echo
+{"status":"success","data":["alert-logger","alertmanager","alloy","backend","frontend","grafana","ingress-nginx","jaeger","kindnet","kube-prometheus-stack-prometheus-operator","kube-state-metrics","local-path-provisioner","loki","notes-api","prometheus","prometheus-node-exporter"]}
+
+
+$ # During the backend outage the frontend still answers 200, so metrics look fine. The logs show the real problem:
+
+$ lq '{namespace="demo", app="frontend"} |= "backend call failed"' 3
+   [frontend-77d9f49868-rldzx] {"level":"error","ts":"2026-10-06T23:49:37.469Z","caller":"http/echo.go:67","msg":"backend call failed","error":"Post \"http://backend.demo.svc:9898/echo\": dial tcp 10.96.236.92:9898: connect: connection refused","url":"http://ba
+   [frontend-77d9f49868-hzsrw] {"level":"error","ts":"2026-10-06T23:49:36.950Z","caller":"http/echo.go:67","msg":"backend call failed","error":"Post \"http://backend.demo.svc:9898/echo\": dial tcp 10.96.236.92:9898: connect: connection refused","url":"http://ba
+   [frontend-77d9f49868-hzsrw] {"level":"error","ts":"2026-10-06T23:49:36.430Z","caller":"http/echo.go:67","msg":"backend call failed","error":"Post \"http://backend.demo.svc:9898/echo\": dial tcp 10.96.236.92:9898: connect: connection refused","url":"http://ba
+
+$ lq '{namespace="demo", app="frontend"} | json | level="error" | line_format "{{.ts}} {{.msg}} -> {{.error}}"' 3
+   [frontend-77d9f49868-rldzx] 2026-10-06T23:49:37.469Z backend call failed -> Post "http://backend.demo.svc:9898/echo": dial tcp 10.96.236.92:9898: connect: connection refused
+   [frontend-77d9f49868-hzsrw] 2026-10-06T23:49:36.950Z backend call failed -> Post "http://backend.demo.svc:9898/echo": dial tcp 10.96.236.92:9898: connect: connection refused
+   [frontend-77d9f49868-hzsrw] 2026-10-06T23:49:36.430Z backend call failed -> Post "http://backend.demo.svc:9898/echo": dial tcp 10.96.236.92:9898: connect: connection refused
+
+$ lq 'sum by (app, level) (count_over_time({namespace="demo"} | json | __error__="" [1m]))'
+   app=backend, level=debug => last values ['125', '125', '124', '84']
+   app=backend, level=info => last values ['6', '2']
+   app=frontend, level=debug => last values ['301', '297', '220', '228']
+   app=frontend, level=error => last values ['86']
+
+$ lq 'topk(3, sum by (uri) (count_over_time({namespace="demo", app="frontend"} | json | msg="request started" [5m])))'
+   uri=/ => last values ['405', '404', '378', '382']
+   uri=/echo => last values ['405', '404', '379', '383']
+   uri=/readyz => last values ['120', '120', '120', '120']
+

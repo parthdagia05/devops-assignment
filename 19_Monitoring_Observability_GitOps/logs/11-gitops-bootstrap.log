@@ -1,0 +1,79 @@
+$ kubectl get ns gitops-dev gitops-prod   # nothing deployed yet
+Error from server (NotFound): namespaces "gitops-dev" not found
+Error from server (NotFound): namespaces "gitops-prod" not found
+
+$ kubectl get applications -n argocd
+No resources found in argocd namespace.
+
+$ # bootstrap: the ONLY manual kubectl apply in the whole GitOps flow
+
+$ kubectl apply -f 03-gitops/bootstrap/root-app.yaml
+application.argoproj.io/root created
+
+$ # ~50s later: root synced apps/ from Git, which created two more Applications, which synced their overlays
+
+$ kubectl get applications -n argocd
+NAME           SYNC STATUS   HEALTH STATUS
+podinfo-dev    Synced        Healthy
+podinfo-prod   Synced        Healthy
+root           Synced        Healthy
+
+$ argocd app list
+NAME                 CLUSTER                         NAMESPACE    PROJECT  STATUS  HEALTH   SYNCPOLICY  CONDITIONS  REPO                                               PATH                   TARGET
+argocd/podinfo-dev   https://kubernetes.default.svc  gitops-dev   default  Synced  Healthy  Auto-Prune  <none>      http://gitea.gitea.svc:3000/parth/gitops-demo.git  podinfo/overlays/dev   main
+argocd/podinfo-prod  https://kubernetes.default.svc  gitops-prod  default  Synced  Healthy  Auto-Prune  <none>      http://gitea.gitea.svc:3000/parth/gitops-demo.git  podinfo/overlays/prod  main
+argocd/root          https://kubernetes.default.svc  argocd       default  Synced  Healthy  Auto-Prune  <none>      http://gitea.gitea.svc:3000/parth/gitops-demo.git  apps                   main
+
+$ argocd app get podinfo-prod
+Name:               argocd/podinfo-prod
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          gitops-prod
+URL:                https://argocd.example.com/applications/podinfo-prod
+Source:
+- Repo:             http://gitea.gitea.svc:3000/parth/gitops-demo.git
+  Target:           main
+  Path:             podinfo/overlays/prod
+SyncWindow:         Sync Allowed
+Sync Policy:        Automated (Prune)
+Sync Status:        Synced to main (9d3e5a4)
+Health Status:      Healthy
+
+GROUP   KIND                 NAMESPACE    NAME                       STATUS   HEALTH   HOOK  MESSAGE
+        Namespace                         gitops-prod                Running  Synced         namespace/gitops-prod created
+policy  PodDisruptionBudget  gitops-prod  podinfo                    Synced   Healthy        poddisruptionbudget.policy/podinfo created
+        ConfigMap            gitops-prod  podinfo-config-m4hbbttbbb  Synced                  configmap/podinfo-config-m4hbbttbbb created
+        Service              gitops-prod  podinfo                    Synced   Healthy        service/podinfo created
+apps    Deployment           gitops-prod  podinfo                    Synced   Healthy        deployment.apps/podinfo created
+
+$ kubectl get all,cm,pdb -n gitops-prod
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/podinfo-7879858785-f69rs   1/1     Running   0          48s
+pod/podinfo-7879858785-jbfsg   1/1     Running   0          48s
+
+NAME              TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
+service/podinfo   ClusterIP   10.96.49.67   <none>        9898/TCP   48s
+
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/podinfo   2/2     2            2           48s
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/podinfo-7879858785   2         2         2       48s
+
+NAME                                  DATA   AGE
+configmap/kube-root-ca.crt            1      48s
+configmap/podinfo-config-m4hbbttbbb   2      48s
+
+NAME                                 MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+poddisruptionbudget.policy/podinfo   1               N/A               1                     48s
+
+$ kubectl get deploy,pods -n gitops-dev
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/podinfo   1/1     1            1           48s
+
+NAME                           READY   STATUS    RESTARTS   AGE
+pod/podinfo-54dbdfc4d7-xfr58   1/1     Running   0          48s
+
+$ kubectl get deploy podinfo -n gitops-prod -o jsonpath='{.metadata.labels}'; echo
+{"app":"podinfo","env":"prod"}
+

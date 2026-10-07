@@ -1,0 +1,144 @@
+# Demo app: podinfo frontend -> podinfo backend.
+# Each pod exposes /metrics (Prometheus), /healthz + /readyz (probes), writes JSON logs to stdout
+# and sends OpenTelemetry traces to Jaeger.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: demo
+  labels: { app: backend, app.kubernetes.io/part-of: podinfo }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: backend } }
+  template:
+    metadata: { labels: { app: backend, app.kubernetes.io/part-of: podinfo } }
+    spec:
+      containers:
+        - name: podinfo
+          image: ghcr.io/stefanprodan/podinfo:6.9.2
+          command: [./podinfo, --port=9898, --level=debug, --otel-service-name=backend,
+                    --random-delay=true, --random-delay-unit=ms, --random-delay-max=300]
+          env:
+            - { name: OTEL_EXPORTER_OTLP_ENDPOINT, value: "http://jaeger.observability.svc:4317" }
+            - { name: OTEL_EXPORTER_OTLP_INSECURE, value: "true" }
+          ports: [ { name: http, containerPort: 9898 } ]
+          livenessProbe:  { httpGet: { path: /healthz, port: 9898 }, periodSeconds: 10 }
+          readinessProbe: { httpGet: { path: /readyz,  port: 9898 }, periodSeconds: 5 }
+          resources:
+            requests: { cpu: 20m,  memory: 32Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: demo
+  labels: { app: backend, app.kubernetes.io/part-of: podinfo }
+spec:
+  selector: { app: backend }
+  ports: [ { name: http, port: 9898, targetPort: 9898 } ]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: demo
+  labels: { app: frontend, app.kubernetes.io/part-of: podinfo }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: frontend } }
+  template:
+    metadata: { labels: { app: frontend, app.kubernetes.io/part-of: podinfo } }
+    spec:
+      containers:
+        - name: podinfo
+          image: ghcr.io/stefanprodan/podinfo:6.9.2
+          command: [./podinfo, --port=9898, --level=debug, --otel-service-name=frontend,
+                    --backend-url=http://backend.demo.svc:9898/echo]
+          env:
+            - { name: OTEL_EXPORTER_OTLP_ENDPOINT, value: "http://jaeger.observability.svc:4317" }
+            - { name: OTEL_EXPORTER_OTLP_INSECURE, value: "true" }
+          ports: [ { name: http, containerPort: 9898 } ]
+          livenessProbe:  { httpGet: { path: /healthz, port: 9898 }, periodSeconds: 10 }
+          readinessProbe: { httpGet: { path: /readyz,  port: 9898 }, periodSeconds: 5 }
+          resources:
+            requests: { cpu: 20m,  memory: 32Mi }
+            limits:   { cpu: 200m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: demo
+  labels: { app: frontend, app.kubernetes.io/part-of: podinfo }
+spec:
+  selector: { app: frontend }
+  ports: [ { name: http, port: 9898, targetPort: 9898 } ]
+---
+# Steady traffic so the graphs have something to show: mostly POST /echo (frontend -> backend),
+# plus some 500s and slow requests for the error-rate and latency panels.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen
+  namespace: demo
+  labels: { app: loadgen }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: loadgen } }
+  template:
+    metadata: { labels: { app: loadgen } }
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:8.16.0
+          command: [sh, -c]
+          args:
+            - |
+              i=0
+              while true; do
+                i=$((i+1))
+                curl -s -o /dev/null -X POST -d "msg $i" http://frontend.demo.svc:9898/echo
+                curl -s -o /dev/null http://frontend.demo.svc:9898/
+                [ $((i % 10)) -eq 0 ] && curl -s -o /dev/null http://frontend.demo.svc:9898/status/500
+                [ $((i % 15)) -eq 0 ] && curl -s -o /dev/null http://frontend.demo.svc:9898/delay/1
+                sleep 0.5
+              done
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+---
+# Alertmanager sends demo alerts here as a webhook; the container prints every request body,
+# so `kubectl logs deploy/alert-logger` shows exactly what Alertmanager delivered.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-logger
+  namespace: demo
+  labels: { app: alert-logger }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: alert-logger } }
+  template:
+    metadata: { labels: { app: alert-logger } }
+    spec:
+      containers:
+        - name: echo
+          image: mendhak/http-https-echo:37
+          env:
+            - { name: HTTP_PORT, value: "8080" }
+            - { name: LOG_IGNORE_PATH, value: "/healthz" }
+          ports: [ { containerPort: 8080 } ]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-logger
+  namespace: demo
+spec:
+  selector: { app: alert-logger }
+  ports: [ { port: 8080, targetPort: 8080 } ]

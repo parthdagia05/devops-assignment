@@ -1,0 +1,44 @@
+$ kubectl apply -f 01-monitoring/demo-app.yaml   # back to the manifest without --stress-*
+namespace/demo unchanged
+deployment.apps/backend configured
+service/backend unchanged
+deployment.apps/frontend unchanged
+service/frontend unchanged
+deployment.apps/loadgen unchanged
+deployment.apps/alert-logger unchanged
+service/alert-logger unchanged
+
+$ kubectl rollout status deploy/backend -n demo
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+deployment "backend" successfully rolled out
+
+$ # ~2 min after the rollback
+
+$ kubectl top pods -n demo -l app=backend
+NAME                       CPU(cores)   MEMORY(bytes)   
+backend-795f465789-fqwdk   2m           16Mi            
+backend-795f465789-gg8rd   3m           18Mi            
+
+$ alert_rules
+   ALERT                    STATE     FOR   ACTIVE
+   PodinfoHighErrorRate     inactive  60s   
+   PodinfoHighLatencyP95    inactive  120s  
+   PodinfoDown              inactive  30s   
+   PodinfoPodNotReady       inactive  30s   
+   PodinfoHighCPU           inactive  60s   
+   PodinfoHighMemory        inactive  60s   
+
+$ am_alerts
+   0 alert(s) in Alertmanager
+
+$ webhooks | grep resolved
+   POST from Alertmanager  status=resolved PodinfoHighCPU     backend-6b4ff5f57f-49cg9   startsAt=23:39:38 endsAt=23:42:08  "backend-6b4ff5f57f-49cg9 CPU at 100% of its limit"
+   POST from Alertmanager  status=resolved PodinfoHighCPU     backend-6b4ff5f57f-mvzd5   startsAt=23:39:23 endsAt=23:42:53  "backend-6b4ff5f57f-mvzd5 CPU at 100% of its limit"
+   POST from Alertmanager  status=resolved PodinfoHighMemory  backend-6b4ff5f57f-49cg9   startsAt=23:39:08 endsAt=23:42:53  "backend-6b4ff5f57f-49cg9 memory at 85.58% of its limit"
+   POST from Alertmanager  status=resolved PodinfoHighMemory  backend-6b4ff5f57f-mvzd5   startsAt=23:38:53 endsAt=23:42:53  "backend-6b4ff5f57f-mvzd5 memory at 88.81% of its limit"
+

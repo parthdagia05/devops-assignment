@@ -1,0 +1,55 @@
+$ kubectl top nodes
+NAME                       CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+devops-lab-control-plane   215m         2%       1810Mi          22%         
+devops-lab-worker          245m         2%       2701Mi          34%         
+
+$ kubectl top pods -n demo
+NAME                            CPU(cores)   MEMORY(bytes)   
+alert-logger-7f9c8c9f4c-knfk7   1m           29Mi            
+backend-795f465789-f2lrd        2m           17Mi            
+backend-795f465789-w584p        2m           15Mi            
+frontend-77d9f49868-hzsrw       4m           18Mi            
+frontend-77d9f49868-rldzx       3m           17Mi            
+loadgen-55fc695dd8-qsn4g        17m          0Mi             
+
+$ # PromQL through the Prometheus HTTP API (localhost:9090 is a port-forward)
+
+$ pq 'up{namespace="demo"}'
+   container=podinfo, endpoint=http, instance=10.244.1.148:9898, job=backend, namespace=demo, pod=backend-795f465789-f2lrd, service=backend => 1
+   container=podinfo, endpoint=http, instance=10.244.1.147:9898, job=frontend, namespace=demo, pod=frontend-77d9f49868-rldzx, service=frontend => 1
+   container=podinfo, endpoint=http, instance=10.244.1.145:9898, job=backend, namespace=demo, pod=backend-795f465789-w584p, service=backend => 1
+   container=podinfo, endpoint=http, instance=10.244.1.146:9898, job=frontend, namespace=demo, pod=frontend-77d9f49868-hzsrw, service=frontend => 1
+
+$ pq 'sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="demo", container="podinfo"}[1m]))   # CPU cores used'
+   pod=backend-795f465789-w584p => 0.000918380286057018
+   pod=frontend-77d9f49868-hzsrw => 0.0023120050022170493
+   pod=frontend-77d9f49868-rldzx => 0.002606991571684353
+   pod=backend-795f465789-f2lrd => 0.0014443710570068555
+
+$ pq 'sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="demo",container="podinfo"}[1m])) / sum by (pod) (kube_pod_container_resource_limits{namespace="demo",container="podinfo",resource="cpu"})   # share of CPU limit'
+   pod=backend-795f465789-w584p => 0.004590297421423804
+   pod=frontend-77d9f49868-hzsrw => 0.011555899193548387
+   pod=frontend-77d9f49868-rldzx => 0.013034957858421764
+   pod=backend-795f465789-f2lrd => 0.007221855285034277
+
+$ pq 'sum by (pod) (container_memory_working_set_bytes{namespace="demo", container="podinfo"})   # memory bytes'
+   pod=backend-795f465789-w584p => 15847424
+   pod=frontend-77d9f49868-hzsrw => 19165184
+   pod=frontend-77d9f49868-rldzx => 19058688
+   pod=backend-795f465789-f2lrd => 18436096
+
+$ pq '1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m]))   # node CPU utilisation'
+   instance=172.18.0.3:9100 => 0.06621778632787811
+   instance=172.18.0.2:9100 => 0.06554098454329604
+
+$ pq 'max by (instance) (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)   # node memory utilisation'
+   instance=172.18.0.3:9100 => 0.5418306764366025
+   instance=172.18.0.2:9100 => 0.5430556109434703
+
+$ pq 'podinfo:http_requests:rate1m   # requests/s (recording rule)'
+   service=backend => 2.003850507799083
+   service=frontend => 2.5470773346178324
+
+$ pq 'podinfo:http_errors:ratio1m    # 5xx ratio (recording rule)'
+   service=frontend => 0.03758234354413726
+

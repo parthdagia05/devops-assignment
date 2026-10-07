@@ -1,0 +1,20 @@
+$ kubectl get prometheusrule podinfo-alerts -n demo -o yaml | grep -E '^\s+- (alert|record):'
+    - alert: PodinfoDown
+    - alert: PodinfoPodNotReady
+    - alert: PodinfoHighErrorRate
+    - alert: PodinfoHighLatencyP95
+    - alert: PodinfoHighCPU
+    - alert: PodinfoHighMemory
+
+$ alert_rules   # Prometheus /api/v1/rules
+   ALERT                    STATE     FOR   ACTIVE
+   PodinfoHighErrorRate     inactive  60s   
+   PodinfoHighLatencyP95    inactive  120s  
+   PodinfoDown              inactive  30s   
+   PodinfoPodNotReady       inactive  30s   
+   PodinfoHighCPU           inactive  60s   
+   PodinfoHighMemory        inactive  60s   
+
+$ am_alerts     # Alertmanager /api/v2/alerts
+   0 alert(s) in Alertmanager
+

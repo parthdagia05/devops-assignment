@@ -1,0 +1,39 @@
+$ kubectl get pods -n argocd
+NAME                                                READY   STATUS    RESTARTS   AGE
+argocd-application-controller-0                     1/1     Running   0          112s
+argocd-applicationset-controller-57db747b87-mfpqq   1/1     Running   0          112s
+argocd-redis-567ff8c97-4ng6l                        1/1     Running   0          112s
+argocd-repo-server-7b4dc77cd7-wbhzm                 1/1     Running   0          112s
+argocd-server-698dd9bbc8-c6vtw                      1/1     Running   0          112s
+
+$ kubectl get pods -n gitea
+NAME                   READY   STATUS    RESTARTS   AGE
+gitea-7fcb6fb4-wbwdx   1/1     Running   0          29s
+
+$ argocd version --short
+argocd: v3.5.3
+argocd-server: v3.5.3
+
+$ # the Git repo that will be the single source of truth (Gitea, in-cluster; localhost:3001 is a port-forward)
+
+$ find . -type f -not -path './.git/*' | sort
+./README.md
+./apps/podinfo-dev.yaml
+./apps/podinfo-prod.yaml
+./podinfo/base/deployment.yaml
+./podinfo/base/kustomization.yaml
+./podinfo/base/service.yaml
+./podinfo/overlays/dev/kustomization.yaml
+./podinfo/overlays/prod/kustomization.yaml
+./podinfo/overlays/prod/pdb.yaml
+
+$ git add . && git commit -q -m 'Initial desired state: podinfo dev + prod, Argo CD apps' && git log --oneline
+9d3e5a4 Initial desired state: podinfo dev + prod, Argo CD apps
+
+$ git push -u origin main 2>&1 | grep -v Password | sed 's/parth:[^@]*@/parth:***@/'
+remote: . Processing 1 references        
+remote: Processed 1 references in total        
+To http://localhost:3001/parth/gitops-demo.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+

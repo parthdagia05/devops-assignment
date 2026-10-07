@@ -1,0 +1,51 @@
+$ # someone changes prod by hand, bypassing Git
+
+$ date +%T; kubectl scale deploy podinfo -n gitops-prod --replicas=1
+05:30:28
+deployment.apps/podinfo scaled
+
+$ kubectl set image deploy/podinfo -n gitops-prod podinfo=ghcr.io/stefanprodan/podinfo:6.9.0
+deployment.apps/podinfo image updated
+
+$ kubectl delete svc podinfo -n gitops-prod
+service "podinfo" deleted from gitops-prod namespace
+
+$ date +%T; kubectl get application podinfo-prod -n argocd -o custom-columns='APP:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+05:30:30
+APP            SYNC        HEALTH
+podinfo-prod   OutOfSync   Progressing
+
+$ # ~20s later: Argo CD saw the live state differ from Git and put Git's version back
+
+$ date +%T; kubectl get deploy,svc -n gitops-prod -o wide
+05:30:50
+NAME                      READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES                               SELECTOR
+deployment.apps/podinfo   3/3     3            3           2m42s   podinfo      ghcr.io/stefanprodan/podinfo:6.9.2   app=podinfo
+
+NAME              TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/podinfo   ClusterIP   10.96.12.45   <none>        9898/TCP   19s   app=podinfo
+
+$ kubectl get pods -n gitops-prod
+NAME                     READY   STATUS    RESTARTS   AGE
+podinfo-d84558f9-29gk9   1/1     Running   0          11s
+podinfo-d84558f9-gdjgx   1/1     Running   0          64s
+podinfo-d84558f9-trk4r   1/1     Running   0          21s
+
+$ kubectl get application podinfo-prod -n argocd -o custom-columns='APP:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status'
+APP            SYNC     HEALTH
+podinfo-prod   Synced   Healthy
+
+$ kubectl get events -n gitops-prod --sort-by=.lastTimestamp | grep -E 'ScalingReplicaSet|Deleted|Created' | tail -6
+11s         Normal    ScalingReplicaSet   deployment/podinfo              Scaled up replica set podinfo-d84558f9 from 2 to 3
+11s         Normal    SuccessfulDelete    replicaset/podinfo-7c79fcddd9   Deleted pod: podinfo-7c79fcddd9-j2wn8
+10s         Normal    SuccessfulCreate    replicaset/podinfo-d84558f9     Created pod: podinfo-d84558f9-29gk9
+10s         Normal    Created             pod/podinfo-d84558f9-29gk9      Container created
+9s          Normal    SuccessfulDelete    replicaset/podinfo-7c79fcddd9   Deleted pod: podinfo-7c79fcddd9-k8tl4
+9s          Normal    ScalingReplicaSet   deployment/podinfo              (combined from similar events): Scaled down replica set podinfo-7c79fcddd9 from 1 to 0
+
+$ kubectl logs -n argocd argocd-application-controller-0 | grep podinfo-prod | grep -iE 'self-heal|needs selfheal|Initiated automated sync|partial' | tail -4 | cut -c1-260
+time="2026-10-07T00:00:29Z" level=info msg="Partial sync operation to f0e6175942c6cead6bad94564ffd5bd792d4b87a succeeded" application=podinfo-prod dest-namespace=gitops-prod dest-server="https://kubernetes.default.svc" reason=OperationCompleted type=Normal
+time="2026-10-07T00:00:31Z" level=info msg="Initiated automated sync to 'f0e6175942c6cead6bad94564ffd5bd792d4b87a'" application=podinfo-prod dest-namespace=gitops-prod dest-server="https://kubernetes.default.svc" reason=OperationStarted type=Normal
+time="2026-10-07T00:00:31Z" level=info msg="Initiated automated sync to 'f0e6175942c6cead6bad94564ffd5bd792d4b87a'" app-namespace=argocd application=podinfo-prod project=default
+time="2026-10-07T00:00:31Z" level=info msg="Partial sync operation to f0e6175942c6cead6bad94564ffd5bd792d4b87a succeeded" application=podinfo-prod dest-namespace=gitops-prod dest-server="https://kubernetes.default.svc" reason=OperationCompleted type=Normal
+

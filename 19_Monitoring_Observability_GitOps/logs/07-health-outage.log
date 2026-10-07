@@ -1,0 +1,86 @@
+$ kubectl get deploy -n demo frontend backend
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+frontend   2/2     2            2           14m
+backend    2/2     2            2           14m
+
+$ kubectl describe deploy backend -n demo | grep -E 'Liveness|Readiness'
+    Liveness:   http-get http://:9898/healthz delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Readiness:  http-get http://:9898/readyz delay=0s timeout=1s period=5s successThreshold=1 failureThreshold=3
+
+$ kubectl scale deploy backend -n demo --replicas=0   # simulate an outage
+deployment.apps/backend scaled
+
+$ kubectl get pods -n demo -l app=backend
+No resources found in demo namespace.
+
+$ kubectl get endpointslices -n demo -l kubernetes.io/service-name=backend
+NAME            ADDRESSTYPE   PORTS     ENDPOINTS   AGE
+backend-xzd5l   IPv4          <unset>   <unset>     14m
+
+$ curl -s -w ' -> HTTP %{http_code}' -X POST -d ping localhost:9898/echo; echo   # frontend can't reach backend
+[
+  "backend http://backend.demo.svc:9898/echo call failed Post \"http://backend.demo.svc:9898/echo\": dial tcp 10.96.236.92:9898: connect: connection refused"
+] -> HTTP 200
+
+$ curl -s -w ' -> HTTP %{http_code}' localhost:9898/healthz; echo                # frontend itself is still healthy
+{
+  "status": "OK"
+} -> HTTP 200
+
+$ # ~100s into the outage
+
+$ pq 'sum by (service) (up{namespace="demo"})'
+   service=frontend => 2
+
+$ pq 'absent(up{namespace="demo", service="backend"})'
+   namespace=demo, service=backend => 1
+
+$ pq 'podinfo:http_errors:ratio1m'
+   service=frontend => 0.03703654059580864
+
+$ alert_rules
+   ALERT                    STATE     FOR   ACTIVE
+   PodinfoHighErrorRate     inactive  60s   
+   PodinfoHighLatencyP95    inactive  120s  
+   PodinfoDown              firing    30s   backend
+   PodinfoPodNotReady       inactive  30s   
+   PodinfoHighCPU           inactive  60s   
+   PodinfoHighMemory        inactive  60s   
+
+$ am_alerts
+   1 alert(s) in Alertmanager
+   PodinfoDown          critical  active   receivers=['webhook-logger']  backend has no healthy targets
+
+$ kubectl scale deploy backend -n demo --replicas=2   # recover
+deployment.apps/backend scaled
+
+$ kubectl rollout status deploy/backend -n demo
+Waiting for deployment "backend" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "backend" rollout to finish: 1 of 2 updated replicas are available...
+deployment "backend" successfully rolled out
+
+$ # ~1 min after recovery
+
+$ kubectl get pods -n demo -l app=backend
+NAME                       READY   STATUS    RESTARTS   AGE
+backend-795f465789-dxh6v   1/1     Running   0          62s
+backend-795f465789-mwj9h   1/1     Running   0          62s
+
+$ curl -s -w ' -> HTTP %{http_code}' -X POST -d ping localhost:9898/echo; echo
+[
+  "ping"
+] -> HTTP 200
+
+$ alert_rules
+   ALERT                    STATE     FOR   ACTIVE
+   PodinfoHighErrorRate     inactive  60s   
+   PodinfoHighLatencyP95    inactive  120s  
+   PodinfoDown              inactive  30s   
+   PodinfoPodNotReady       inactive  30s   
+   PodinfoHighCPU           inactive  60s   
+   PodinfoHighMemory        inactive  60s   
+
+$ webhooks | grep PodinfoDown
+   POST from Alertmanager  status=firing   PodinfoDown                                   startsAt=23:48:32 endsAt=-  "backend has no healthy targets"
+   POST from Alertmanager  status=resolved PodinfoDown                                   startsAt=23:48:32 endsAt=23:52:17  "backend has no healthy targets"
+

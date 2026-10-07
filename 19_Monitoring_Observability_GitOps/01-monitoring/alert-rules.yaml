@@ -1,0 +1,63 @@
+# Alert rules for the demo app. Prometheus evaluates them every 15s; when one is true for `for:`
+# it fires, Alertmanager groups it and (because of team=demo) sends it to the webhook receiver.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: podinfo-alerts
+  namespace: demo
+spec:
+  groups:
+    - name: podinfo.health
+      rules:
+        - alert: PodinfoDown
+          expr: sum by (service) (up{namespace="demo", service=~"frontend|backend"}) == 0
+                or absent(up{namespace="demo", service="backend"})
+          for: 30s
+          labels: { severity: critical, team: demo }
+          annotations:
+            summary: "{{ $labels.service }} has no healthy targets"
+            description: "Prometheus cannot scrape any {{ $labels.service }} pod for 30s."
+        - alert: PodinfoPodNotReady
+          expr: sum by (namespace, pod) (kube_pod_status_ready{namespace="demo", condition="false"}) > 0
+          for: 30s
+          labels: { severity: warning, team: demo }
+          annotations:
+            summary: "Pod {{ $labels.pod }} is not ready"
+    - name: podinfo.golden-signals
+      rules:
+        - record: podinfo:http_requests:rate1m
+          expr: sum by (service) (rate(http_request_duration_seconds_count{namespace="demo"}[1m]))
+        - record: podinfo:http_errors:ratio1m
+          expr: sum by (service) (rate(http_request_duration_seconds_count{namespace="demo", status=~"5.."}[1m]))
+                / sum by (service) (rate(http_request_duration_seconds_count{namespace="demo"}[1m]))
+        - alert: PodinfoHighErrorRate
+          expr: podinfo:http_errors:ratio1m > 0.05
+          for: 1m
+          labels: { severity: warning, team: demo }
+          annotations:
+            summary: "{{ $labels.service }} 5xx ratio is {{ $value | humanizePercentage }}"
+        - alert: PodinfoHighLatencyP95
+          expr: histogram_quantile(0.95, sum by (service, le) (rate(http_request_duration_seconds_bucket{namespace="demo"}[2m]))) > 1
+          for: 2m
+          labels: { severity: warning, team: demo }
+          annotations:
+            summary: "{{ $labels.service }} p95 latency is {{ $value | humanizeDuration }}"
+    - name: podinfo.resources
+      rules:
+        - alert: PodinfoHighCPU
+          # CPU used as a share of the container's CPU limit
+          expr: |
+            sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="demo", container="podinfo"}[1m]))
+              / sum by (pod) (kube_pod_container_resource_limits{namespace="demo", container="podinfo", resource="cpu"}) > 0.8
+          for: 1m
+          labels: { severity: warning, team: demo }
+          annotations:
+            summary: "{{ $labels.pod }} CPU at {{ $value | humanizePercentage }} of its limit"
+        - alert: PodinfoHighMemory
+          expr: |
+            sum by (pod) (container_memory_working_set_bytes{namespace="demo", container="podinfo"})
+              / sum by (pod) (kube_pod_container_resource_limits{namespace="demo", container="podinfo", resource="memory"}) > 0.8
+          for: 1m
+          labels: { severity: warning, team: demo }
+          annotations:
+            summary: "{{ $labels.pod }} memory at {{ $value | humanizePercentage }} of its limit"

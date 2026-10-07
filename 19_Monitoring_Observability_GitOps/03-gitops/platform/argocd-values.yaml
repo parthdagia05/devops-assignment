@@ -1,0 +1,18 @@
+# Argo CD (argo/argo-cd chart) for a single-node lab.
+# helm upgrade --install argocd argo/argo-cd -n argocd -f this-file
+dex: { enabled: false }
+notifications: { enabled: false }
+configs:
+  params:
+    server.insecure: true            # plain HTTP behind port-forward
+  cm:
+    timeout.reconciliation: 60s      # poll Git every 60s (default 180s); the Gitea webhook makes it near-instant anyway
+    users.anonymous.enabled: "true"  # read-only UI without login, for screenshots
+  rbac:
+    policy.default: role:readonly
+server:
+  metrics:     { enabled: true, serviceMonitor: { enabled: true } }   # Argo CD's own metrics into Prometheus
+controller:
+  metrics:     { enabled: true, serviceMonitor: { enabled: true } }
+repoServer:
+  metrics:     { enabled: true, serviceMonitor: { enabled: true } }

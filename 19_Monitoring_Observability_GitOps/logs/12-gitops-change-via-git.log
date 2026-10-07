@@ -1,0 +1,85 @@
+$ kubectl exec -n demo deploy/loadgen -- curl -s http://podinfo.gitops-prod.svc:9898/ | grep -E '"(version|message|hostname)"'
+  "hostname": "podinfo-7879858785-jbfsg",
+  "version": "6.9.1",
+  "message": "hello from PROD (deployed by Argo CD)",
+
+$ git diff
+diff --git a/podinfo/overlays/prod/kustomization.yaml b/podinfo/overlays/prod/kustomization.yaml
+index 9a850ec..90baa73 100644
+--- a/podinfo/overlays/prod/kustomization.yaml
++++ b/podinfo/overlays/prod/kustomization.yaml
+@@ -3,10 +3,12 @@ kind: Kustomization
+ resources: [../../base, pdb.yaml]
+ labels:
+   - pairs: { env: prod }
++images:
++  - { name: ghcr.io/stefanprodan/podinfo, newTag: 6.9.2 }
+ replicas:
+-  - { name: podinfo, count: 2 }
++  - { name: podinfo, count: 3 }
+ configMapGenerator:
+   - name: podinfo-config
+     literals:
+-      - PODINFO_UI_MESSAGE=hello from PROD (deployed by Argo CD)
++      - PODINFO_UI_MESSAGE=hello from PROD v2 (changed in Git)
+       - PODINFO_UI_COLOR=#34577c
+
+$ git commit -qam 'prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message' && git log --oneline -2
+f0e6175 prod: 3 replicas, podinfo 6.9.1 -> 6.9.2, new message
+9d3e5a4 Initial desired state: podinfo dev + prod, Argo CD apps
+
+$ date +%T; git push 2>&1 | grep -E 'main|To '
+05:29:40
+To http://localhost:3001/parth/gitops-demo.git
+   9d3e5a4..f0e6175  main -> main
+
+$ # ~6s after the push (the Gitea webhook told Argo CD to refresh; no kubectl apply was run)
+
+$ date +%T; kubectl get application -n argocd -o custom-columns='APP:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status,REVISION:.status.sync.revision,SYNCED_AT:.status.operationState.finishedAt'
+05:29:47
+APP            SYNC     HEALTH        REVISION                                   SYNCED_AT
+podinfo-dev    Synced   Healthy       f0e6175942c6cead6bad94564ffd5bd792d4b87a   2026-10-06T23:58:08Z
+podinfo-prod   Synced   Progressing   f0e6175942c6cead6bad94564ffd5bd792d4b87a   2026-10-06T23:59:44Z
+root           Synced   Healthy       f0e6175942c6cead6bad94564ffd5bd792d4b87a   2026-10-06T23:58:08Z
+
+$ kubectl get pods -n gitops-prod
+NAME                       READY   STATUS              RESTARTS   AGE
+podinfo-7879858785-f69rs   1/1     Running             0          99s
+podinfo-7879858785-fxmc6   0/1     Terminating         0          3s
+podinfo-7879858785-jbfsg   1/1     Terminating         0          99s
+podinfo-d84558f9-c64t2     1/1     Running             0          2s
+podinfo-d84558f9-gdjgx     0/1     ContainerCreating   0          1s
+podinfo-d84558f9-w6h9w     1/1     Running             0          3s
+
+$ # ~40s after the push
+
+$ kubectl get deploy podinfo -n gitops-prod -o wide
+NAME      READY   UP-TO-DATE   AVAILABLE   AGE    CONTAINERS   IMAGES                               SELECTOR
+podinfo   3/3     3            3           2m9s   podinfo      ghcr.io/stefanprodan/podinfo:6.9.2   app=podinfo
+
+$ kubectl get pods -n gitops-prod
+NAME                     READY   STATUS    RESTARTS   AGE
+podinfo-d84558f9-c64t2   1/1     Running   0          32s
+podinfo-d84558f9-gdjgx   1/1     Running   0          31s
+podinfo-d84558f9-w6h9w   1/1     Running   0          33s
+
+$ kubectl exec -n demo deploy/loadgen -- curl -s http://podinfo.gitops-prod.svc:9898/ | grep -E '"(version|message|hostname)"'
+  "hostname": "podinfo-d84558f9-c64t2",
+  "version": "6.9.2",
+  "message": "hello from PROD v2 (changed in Git)",
+
+$ argocd app get podinfo-prod | sed -n '/^Sync Status/,$p'
+Sync Status:        Synced to main (f0e6175)
+Health Status:      Healthy
+
+GROUP   KIND                 NAMESPACE    NAME                       STATUS     HEALTH   HOOK  MESSAGE
+        ConfigMap            gitops-prod  podinfo-config-m4hbbttbbb  Succeeded  Pruned         pruned
+policy  PodDisruptionBudget  gitops-prod  podinfo                    Synced     Healthy        poddisruptionbudget.policy/podinfo configured
+        ConfigMap            gitops-prod  podinfo-config-899mtmkh45  Synced                    configmap/podinfo-config-899mtmkh45 created
+        Service              gitops-prod  podinfo                    Synced     Healthy        service/podinfo unchanged
+apps    Deployment           gitops-prod  podinfo                    Synced     Healthy        deployment.apps/podinfo configured
+
+$ kubectl logs -n argocd deploy/argocd-server | grep -i webhook | tail -2
+time="2026-10-06T23:59:43Z" level=info msg="refreshing app from webhook" app-namespace=argocd application=podinfo-dev project=default
+time="2026-10-06T23:59:43Z" level=info msg="Webhook handler completed in 1.484917ms"
+

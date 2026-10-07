@@ -1,0 +1,90 @@
+$ # what Kubernetes gives you out of the box
+
+$ kubectl get --raw '/readyz?verbose' | tail -4
+[+]poststarthook/apiservice-openapi-controller ok
+[+]poststarthook/apiservice-openapiv3-controller ok
+[+]shutdown ok
+readyz check passed
+
+$ kubectl top nodes
+NAME                       CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)   
+devops-lab-control-plane   181m         1%       1961Mi          24%         
+devops-lab-worker          347m         3%       3553Mi          44%         
+
+$ kubectl top pods -n demo --containers | head -6
+POD                             NAME      CPU(cores)   MEMORY(bytes)   
+alert-logger-7f9c8c9f4c-knfk7   echo      1m           29Mi            
+backend-795f465789-dxh6v        podinfo   4m           22Mi            
+backend-795f465789-mwj9h        podinfo   2m           20Mi            
+frontend-77d9f49868-hzsrw       podinfo   4m           27Mi            
+frontend-77d9f49868-rldzx       podinfo   4m           26Mi            
+
+$ kubectl get events -n demo --field-selector type=Warning --sort-by=.lastTimestamp | tail -5
+25m         Warning   Unhealthy   pod/backend-6b4ff5f57f-49cg9    Readiness probe failed: Get "http://10.244.1.150:9898/readyz": dial tcp 10.244.1.150:9898: connect: connection refused
+20m         Warning   Unhealthy   pod/backend-795f465789-gg8rd    Readiness probe failed: Get "http://10.244.1.151:9898/readyz": dial tcp 10.244.1.151:9898: connect: connection refused
+20m         Warning   Unhealthy   pod/backend-795f465789-fqwdk    Readiness probe failed: Get "http://10.244.1.152:9898/readyz": dial tcp 10.244.1.152:9898: connect: connection refused
+10m         Warning   Unhealthy   pod/backend-795f465789-dxh6v    Readiness probe failed: Get "http://10.244.1.154:9898/readyz": dial tcp 10.244.1.154:9898: connect: connection refused
+10m         Warning   Unhealthy   pod/backend-795f465789-mwj9h    Readiness probe failed: Get "http://10.244.1.153:9898/readyz": dial tcp 10.244.1.153:9898: connect: connection refused
+
+$ kubectl describe pod -n demo -l app=backend | grep -E '^Name:|Liveness|Readiness|Limits|Requests|cpu:|memory:|Restart Count' | head -11
+Name:             backend-795f465789-dxh6v
+    Restart Count:  0
+    Limits:
+      cpu:     200m
+      memory:  128Mi
+    Requests:
+      cpu:      20m
+      memory:   32Mi
+    Liveness:   http-get http://:9898/healthz delay=0s timeout=1s period=10s successThreshold=1 failureThreshold=3
+    Readiness:  http-get http://:9898/readyz delay=0s timeout=1s period=5s successThreshold=1 failureThreshold=3
+Name:             backend-795f465789-mwj9h
+
+$ kubectl get pods -n demo -o custom-columns='POD:.metadata.name,READY:.status.containerStatuses[0].ready,RESTARTS:.status.containerStatuses[0].restartCount,NODE:.spec.nodeName'
+POD                             READY   RESTARTS   NODE
+alert-logger-7f9c8c9f4c-knfk7   true    0          devops-lab-worker
+backend-795f465789-dxh6v        true    0          devops-lab-worker
+backend-795f465789-mwj9h        true    0          devops-lab-worker
+frontend-77d9f49868-hzsrw       true    0          devops-lab-worker
+frontend-77d9f49868-rldzx       true    0          devops-lab-worker
+loadgen-55fc695dd8-qsn4g        true    0          devops-lab-worker
+
+$ # what the monitoring stack adds: cluster state as metrics (kube-state-metrics) and node metrics (node-exporter)
+
+$ pq 'sum by (namespace) (kube_pod_status_phase{phase="Running"})'
+   namespace=monitoring => 7
+   namespace=kube-system => 11
+   namespace=devsecops => 2
+   namespace=ingress-nginx => 1
+   namespace=local-path-storage => 1
+   namespace=observability => 4
+   namespace=demo => 6
+   namespace=argocd => 5
+   namespace=gitea => 1
+   namespace=gitops-dev => 1
+   namespace=gitops-prod => 2
+
+$ pq 'sum(kube_deployment_status_replicas_unavailable)'
+   {} => 0
+
+$ pq 'count by (node) (kube_pod_info)'
+   node=devops-lab-worker => 29
+   node=devops-lab-control-plane => 12
+
+$ pq 'topk(5, sum by (namespace) (container_memory_working_set_bytes{container!=""}))'
+   namespace=monitoring => 1606787072
+   namespace=kube-system => 1509928960
+   namespace=observability => 620924928
+   namespace=argocd => 315568128
+   namespace=ingress-nginx => 149544960
+
+$ curl -s -u admin:admin123 'localhost:3000/api/search?tag=kubernetes-mixin' | python3 -c 'import json,sys; d=json.load(sys.stdin); print(len(d), "built-in Kubernetes dashboards, e.g."); [print("  ", x["title"]) for x in d[:8]]'
+16 built-in Kubernetes dashboards, e.g.
+   Kubernetes / API server
+   Kubernetes / Compute Resources /  Multi-Cluster
+   Kubernetes / Compute Resources / Cluster
+   Kubernetes / Compute Resources / Namespace (Pods)
+   Kubernetes / Compute Resources / Namespace (Workloads)
+   Kubernetes / Compute Resources / Node (Pods)
+   Kubernetes / Compute Resources / Nodes Overview
+   Kubernetes / Compute Resources / Pod
+

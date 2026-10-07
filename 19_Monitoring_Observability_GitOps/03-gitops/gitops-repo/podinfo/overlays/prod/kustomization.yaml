@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: [../../base]
+labels:
+  - pairs: { env: prod }
+replicas:
+  - { name: podinfo, count: 2 }
+configMapGenerator:
+  - name: podinfo-config
+    literals:
+      - PODINFO_UI_MESSAGE=hello from PROD (deployed by Argo CD)
+      - PODINFO_UI_COLOR=#34577c
