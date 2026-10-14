@@ -1,5 +1,5 @@
 # ---- Stage 1: install dependencies into a virtualenv ----
-FROM python:3.12-slim AS builder
+FROM python:3.14-slim AS builder
 
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
     && pip uninstall -y pip
 
 # ---- Stage 2: small runtime image, no pip/build tools from stage 1 ----
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
