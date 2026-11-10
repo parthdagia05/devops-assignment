@@ -374,7 +374,7 @@ jobs:
       # Demo cluster: a fresh kind (Kubernetes in Docker) cluster on the runner.
       # For a real cluster, replace this step with a kubeconfig from a secret.
       - name: Create kind cluster
-        uses: helm/kind-action@v1.15.1
+        uses: helm/kind-action@v1.15.2
         with:
           cluster_name: devsecops
 
